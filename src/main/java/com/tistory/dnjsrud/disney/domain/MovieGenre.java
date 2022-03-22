@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "movie_genre")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MovieGenre {
@@ -28,7 +27,7 @@ public class MovieGenre {
         this.movie = movie;
     }
 
-    public void setGenre(Genre genre) {
+    private void setGenre(Genre genre) {
         this.genre = genre;
     }
 
