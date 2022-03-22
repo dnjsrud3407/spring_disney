@@ -33,4 +33,15 @@ public class Review extends BaseEntity{
     @NotNull
     private boolean visible;
 
+    //== 연관관계 메서드 ==//
+    public void setUser(User user) {
+        this.user = user;
+        user.getReviews().add(this);
+    }
+
+    public void setMovie(Movie movie) {
+        this.movie = movie;
+        movie.getReviews().add(this);
+    }
+
 }
