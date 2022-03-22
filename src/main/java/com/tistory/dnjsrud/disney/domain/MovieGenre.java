@@ -11,6 +11,7 @@ import javax.persistence.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MovieGenre {
 
+    // test
     @Id @GeneratedValue
     @Column(name = "movie_genre_id")
     private Long id;
