@@ -19,13 +19,18 @@ public class Genre {
     private Long id;
 
     @NotNull @Column(unique = true)
-    private String genre;
+    private String genreName;
 
     @NotNull
-    private boolean visible;
+    private boolean isVisible;
 
-    public Genre(String genre, boolean visible) {
-        this.genre = genre;
-        this.visible = visible;
+    public Genre(String genreName, boolean isVisible) {
+        this.genreName = genreName;
+        this.isVisible = isVisible;
+    }
+
+    //== 비즈니스 로직 ==//
+    public void changeVisible(boolean isVisible) {
+        this.isVisible = isVisible;
     }
 }
