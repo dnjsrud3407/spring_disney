@@ -43,4 +43,10 @@ public class User {
         this.nickname = nickname;
         this.email = email;
     }
+
+    //== 비즈니스 로직 ==//
+    public void changePassword(String password) {
+        this.password = password;
+    }
+
 }
