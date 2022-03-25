@@ -10,7 +10,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.Array;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Transactional
@@ -22,22 +25,69 @@ public class MovieService {
     private final MovieGenreRepository movieGenreRepository;
 
     /**
-     * 영화 등록
-     * @param movie
+     * 영화 등록 - 영화장르 생성 후 영화 등록
+     * @param title, releaseDate, content, visible
      * @return movieId
      */
-    public Long saveMovie(Movie movie) {
+    public Long createMovie(String title, LocalDateTime releaseDate, String content, boolean visible, ArrayList<Long> genreIds) {
+        // 영화장르 생성
+        ArrayList<MovieGenre> movieGenres = new ArrayList<>();
+        for (Long genreId : genreIds) {
+            Genre genre = genreRepository.findById(genreId).orElse(null);
+            if(genre != null) {
+                MovieGenre movieGenre = MovieGenre.createMovieGenre(genre);
+                movieGenreRepository.save(movieGenre);
+
+                movieGenres.add(movieGenre);
+            }
+        }
+
+        // 영화 생성
+        Movie movie = Movie.createMovie(title, releaseDate, content, visible, movieGenres);
         movieRepository.save(movie);
         return movie.getId();
     }
 
-    public void saveMovie(String title, LocalDateTime releaseDate, String content, boolean visible, Long genreId) {
-        // 무비장르 생성
-        Genre genre = genreRepository.findById(genreId).get();
-        MovieGenre movieGenre = MovieGenre.createMovieGenre(genre);
-        movieGenreRepository.save(movieGenre);
+    // 영화 전체 조회
+    public List<Movie> findMovies() {
+        return movieRepository.findAll();
+    }
 
-        Movie movie = Movie.createMovie(title, releaseDate, content, visible, movieGenre);
-        movieRepository.save(movie);
+    // 영화 정보 조회
+    public Movie findMovie(Long movieId) {
+        return movieRepository.findById(movieId).orElse(null);
+    }
+
+    /**
+     * 영화 숨기기 처리
+     * @param movieId
+     * @param isVisible
+     */
+    @Transactional
+    public void changeVisible(Long movieId, boolean isVisible) {
+        Movie movie = movieRepository.findById(movieId).orElse(null);
+        if(movie != null) {
+            movie.changeVisible(isVisible);
+        }
+    }
+
+    @Transactional
+    public void changeMovieGenre(Long movieId, ArrayList<Long> genreIds) {
+        // 영화장르 생성
+        ArrayList<MovieGenre> movieGenres = new ArrayList<>();
+        for (Long genreId : genreIds) {
+            Genre genre = genreRepository.findById(genreId).orElse(null);
+            if(genre != null) {
+                MovieGenre movieGenre = MovieGenre.createMovieGenre(genre);
+                movieGenreRepository.save(movieGenre);
+
+                movieGenres.add(movieGenre);
+            }
+        }
+
+        Movie movie = movieRepository.findById(movieId).orElse(null);
+        if (movie != null) {
+            movie.changeMovieGenre(movieGenres);
+        }
     }
 }

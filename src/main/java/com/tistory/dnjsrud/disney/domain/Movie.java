@@ -35,7 +35,14 @@ public class Movie extends BaseEntity{
     private List<Review> reviews = new ArrayList<>();
 
     @NotNull
-    private boolean visible;
+    private boolean isVisible;
+
+    private Movie(String title, LocalDateTime releaseDate, String content, boolean isVisible) {
+        this.title = title;
+        this.releaseDate = releaseDate;
+        this.content = content;
+        this.isVisible = isVisible;
+    }
 
     //== 연관관계 메서드 ==//
     public void addMovieGenre(MovieGenre movieGenre) {
@@ -44,18 +51,25 @@ public class Movie extends BaseEntity{
     }
 
     //== 생성 메서드 ==//
-    public static Movie createMovie(String title, LocalDateTime releaseDate, String content, boolean visible, MovieGenre... movieGenres) {
-        Movie movie = new Movie(title, releaseDate, content, visible);
+    public static Movie createMovie(String title, LocalDateTime releaseDate, String content,
+                                    boolean isVisible, ArrayList<MovieGenre> movieGenres) {
+        Movie movie = new Movie(title, releaseDate, content, isVisible);
         for (MovieGenre movieGenre : movieGenres) {
             movie.addMovieGenre(movieGenre);
         }
         return movie;
     }
 
-    private Movie(String title, LocalDateTime releaseDate, String content, boolean visible) {
-        this.title = title;
-        this.releaseDate = releaseDate;
-        this.content = content;
-        this.visible = visible;
+    //== 비즈니스 로직 ==//
+    public void changeVisible(boolean isVisible) {
+        this.isVisible = isVisible;
+    }
+
+    public void changeMovieGenre(ArrayList<MovieGenre> movieGenres) {
+        this.movieGenres.clear();
+        this.movieGenres = new ArrayList<>();
+        for (MovieGenre movieGenre : movieGenres) {
+            this.movieGenres.add(movieGenre);
+        }
     }
 }
