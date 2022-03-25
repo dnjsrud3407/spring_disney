@@ -43,13 +43,21 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    /**
-     * 회원정보 조회
-     * @param id
-     * @return User
-     */
+    // 회원 정보 조회
     public User findUser(Long id) {
         return userRepository.findById(id).orElse(null);
     }
-
+    
+    /**
+     * 회원 비밀번호 변경
+     * @param userId
+     * @param password
+     */
+    @Transactional
+    public void changePassword(Long userId, String password) {
+        User user = userRepository.findById(userId).orElse(null);
+        if (user != null) {
+            user.changePassword(password);
+        }
+    }
 }
