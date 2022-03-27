@@ -30,8 +30,10 @@ public class Review extends BaseEntity{
     @JoinColumn(name = "movie_id")
     private Movie movie;
 
-    @NotNull
-    private boolean visible;
+    private Review(float star, String content) {
+        this.star = star;
+        this.content = content;
+    }
 
     //== 연관관계 메서드 ==//
     public void setUser(User user) {
@@ -42,6 +44,20 @@ public class Review extends BaseEntity{
     public void setMovie(Movie movie) {
         this.movie = movie;
         movie.getReviews().add(this);
+    }
+
+    //== 생성 메서드 ==//
+    public static Review createReview(float star, String content, User user, Movie movie) {
+        Review review = new Review(star, content);
+        review.setUser(user);
+        review.setMovie(movie);
+        return review;
+    }
+
+    //== 비즈니스 로직 ==//
+    public void changeReview(float star, String content) {
+        this.star = star;
+        this.content = content;
     }
 
 }
