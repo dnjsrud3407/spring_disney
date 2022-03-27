@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class MovieService {
 
@@ -28,6 +28,7 @@ public class MovieService {
      * @param title, releaseDate, content, visible
      * @return movieId
      */
+    @Transactional
     public Long createMovie(String title, LocalDateTime releaseDate, String content, boolean visible, ArrayList<Long> genreIds) {
         // 영화장르 생성
         ArrayList<MovieGenre> movieGenres = new ArrayList<>();
@@ -69,6 +70,11 @@ public class MovieService {
         }
     }
 
+    /**
+     * 영화장르 변경
+     * @param movieId
+     * @param genreIds
+     */
     @Transactional
     public void changeMovieGenre(Long movieId, ArrayList<Long> genreIds) {
         // 영화장르 삭제
