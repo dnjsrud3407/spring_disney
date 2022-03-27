@@ -28,7 +28,7 @@ public class Movie extends BaseEntity{
     @NotNull
     private String content;
 
-    @OneToMany(mappedBy = "movie")
+    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL)
     private List<MovieGenre> movieGenres = new ArrayList<>();
 
     @OneToMany(mappedBy = "movie")
@@ -69,7 +69,7 @@ public class Movie extends BaseEntity{
         this.movieGenres.clear();
         this.movieGenres = new ArrayList<>();
         for (MovieGenre movieGenre : movieGenres) {
-            this.movieGenres.add(movieGenre);
+            this.addMovieGenre(movieGenre);
         }
     }
 }

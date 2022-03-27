@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.lang.reflect.Array;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +35,6 @@ public class MovieService {
             Genre genre = genreRepository.findById(genreId).orElse(null);
             if(genre != null) {
                 MovieGenre movieGenre = MovieGenre.createMovieGenre(genre);
-                movieGenreRepository.save(movieGenre);
 
                 movieGenres.add(movieGenre);
             }
@@ -73,18 +71,21 @@ public class MovieService {
 
     @Transactional
     public void changeMovieGenre(Long movieId, ArrayList<Long> genreIds) {
+        // 영화장르 삭제
+        movieGenreRepository.deleteByMovieId(movieId);
+
         // 영화장르 생성
         ArrayList<MovieGenre> movieGenres = new ArrayList<>();
         for (Long genreId : genreIds) {
             Genre genre = genreRepository.findById(genreId).orElse(null);
             if(genre != null) {
                 MovieGenre movieGenre = MovieGenre.createMovieGenre(genre);
-                movieGenreRepository.save(movieGenre);
 
                 movieGenres.add(movieGenre);
             }
         }
 
+        // 영화장르 변경
         Movie movie = movieRepository.findById(movieId).orElse(null);
         if (movie != null) {
             movie.changeMovieGenre(movieGenres);
