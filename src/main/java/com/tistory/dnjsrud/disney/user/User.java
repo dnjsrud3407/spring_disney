@@ -38,16 +38,27 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Review> reviews = new ArrayList<>();
 
-    public User(String loginId, String password, String nickname, String email) {
+    private User(String loginId, String password, String nickname, String email, Role role) {
         this.loginId = loginId;
         this.password = password;
         this.nickname = nickname;
         this.email = email;
+        this.role = role;
+    }
+
+    //== 생성 메서드 ==//
+    public static User createUser(String loginId, String password, String nickname, String email) {
+        User user = new User(loginId, password, nickname, email, Role.USER);
+        return user;
     }
 
     //== 비즈니스 로직 ==//
     public void changePassword(String password) {
         this.password = password;
+    }
+
+    public void changeNickname(String nickname) {
+        this.nickname = nickname;
     }
 
 }
