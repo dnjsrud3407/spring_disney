@@ -1,12 +1,11 @@
 package com.tistory.dnjsrud.disney.genre;
 
-import com.tistory.dnjsrud.disney.genre.Genre;
-import com.tistory.dnjsrud.disney.genre.GenreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -29,8 +28,8 @@ public class GenreService {
     }
 
     private void validateDuplicateGenre(String genreName) {
-        List<Genre> findGenre = genreRepository.findByGenreName(genreName);
-        if (!findGenre.isEmpty()) {
+        Optional<Genre> findGenre = genreRepository.findByGenreName(genreName);
+        if (findGenre.isPresent()) {
             throw new IllegalStateException("이비 존재하는 장르명입니다.");
         }
     }
