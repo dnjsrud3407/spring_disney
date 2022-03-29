@@ -1,4 +1,4 @@
-package com.tistory.dnjsrud.disney.domain;
+package com.tistory.dnjsrud.disney.genre;
 
 import com.sun.istack.NotNull;
 import lombok.AccessLevel;

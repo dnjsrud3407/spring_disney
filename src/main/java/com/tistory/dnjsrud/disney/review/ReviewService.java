@@ -1,11 +1,11 @@
-package com.tistory.dnjsrud.disney.service;
+package com.tistory.dnjsrud.disney.review;
 
-import com.tistory.dnjsrud.disney.domain.Movie;
-import com.tistory.dnjsrud.disney.domain.Review;
-import com.tistory.dnjsrud.disney.domain.User;
-import com.tistory.dnjsrud.disney.repository.MovieRepository;
-import com.tistory.dnjsrud.disney.repository.ReviewRepository;
-import com.tistory.dnjsrud.disney.repository.UserRepository;
+import com.tistory.dnjsrud.disney.movie.Movie;
+import com.tistory.dnjsrud.disney.review.Review;
+import com.tistory.dnjsrud.disney.user.User;
+import com.tistory.dnjsrud.disney.movie.MovieRepository;
+import com.tistory.dnjsrud.disney.review.ReviewRepository;
+import com.tistory.dnjsrud.disney.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,7 +51,7 @@ public class ReviewService {
         User user = userRepository.findById(userId).orElse(null);
         Movie movie = movieRepository.findById(movieId).orElse(null);
         if (user != null && movie != null) {
-            Review review = reviewRepository.findReviewByUserIdAndMovieId(userId, movieId).orElse(null);
+            Review review = reviewRepository.findByUserIdAndMovieId(userId, movieId).orElse(null);
             if (review != null) {
                 review.changeReview(star, content);
             }
@@ -61,16 +61,16 @@ public class ReviewService {
     // 리뷰 삭제
     @Transactional
     public Long deleteReview(Long userId, Long movieId) {
-        return reviewRepository.deleteReviewByUserIdAndMovieId(userId, movieId);
+        return reviewRepository.deleteByUserIdAndMovieId(userId, movieId);
     }
 
     // 해당 영화 리뷰 조회
     public List<Review> findReviewByMovie(Long movieId) {
-        return reviewRepository.findReviewsByMovieId(movieId);
+        return reviewRepository.findByMovieId(movieId);
     }
 
     // 해당 유저 리뷰 조회
     public List<Review> findReviewByUser(Long userId) {
-        return reviewRepository.findReviewsByUserId(userId);
+        return reviewRepository.findByUserId(userId);
     }
 }

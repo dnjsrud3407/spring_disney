@@ -1,7 +1,7 @@
-package com.tistory.dnjsrud.disney.service;
+package com.tistory.dnjsrud.disney.genre;
 
-import com.tistory.dnjsrud.disney.domain.Genre;
-import com.tistory.dnjsrud.disney.repository.GenreRepository;
+import com.tistory.dnjsrud.disney.genre.Genre;
+import com.tistory.dnjsrud.disney.genre.GenreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

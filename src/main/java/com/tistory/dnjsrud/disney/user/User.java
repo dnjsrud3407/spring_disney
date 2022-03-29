@@ -1,6 +1,7 @@
-package com.tistory.dnjsrud.disney.domain;
+package com.tistory.dnjsrud.disney.user;
 
 import com.sun.istack.NotNull;
+import com.tistory.dnjsrud.disney.review.Review;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

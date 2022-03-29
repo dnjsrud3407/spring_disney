@@ -1,4 +1,4 @@
-package com.tistory.dnjsrud.disney.domain;
+package com.tistory.dnjsrud.disney.global;
 
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;

@@ -1,6 +1,9 @@
-package com.tistory.dnjsrud.disney.domain;
+package com.tistory.dnjsrud.disney.movie;
 
 import com.sun.istack.NotNull;
+import com.tistory.dnjsrud.disney.global.BaseEntity;
+import com.tistory.dnjsrud.disney.moviegenre.MovieGenre;
+import com.tistory.dnjsrud.disney.review.Review;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +16,7 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Movie extends BaseEntity{
+public class Movie extends BaseEntity {
 
     @Id @GeneratedValue
     @Column(name = "movie_id")

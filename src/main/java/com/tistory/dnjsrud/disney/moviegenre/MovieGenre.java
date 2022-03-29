@@ -1,5 +1,7 @@
-package com.tistory.dnjsrud.disney.domain;
+package com.tistory.dnjsrud.disney.moviegenre;
 
+import com.tistory.dnjsrud.disney.genre.Genre;
+import com.tistory.dnjsrud.disney.movie.Movie;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

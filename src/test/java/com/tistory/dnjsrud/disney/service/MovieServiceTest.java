@@ -1,27 +1,22 @@
 package com.tistory.dnjsrud.disney.service;
 
-import com.tistory.dnjsrud.disney.domain.Genre;
-import com.tistory.dnjsrud.disney.domain.Movie;
-import com.tistory.dnjsrud.disney.domain.MovieGenre;
-import com.tistory.dnjsrud.disney.repository.GenreRepository;
-import com.tistory.dnjsrud.disney.repository.MovieGenreRepository;
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
+import com.tistory.dnjsrud.disney.genre.Genre;
+import com.tistory.dnjsrud.disney.genre.GenreService;
+import com.tistory.dnjsrud.disney.movie.Movie;
+import com.tistory.dnjsrud.disney.movie.MovieService;
+import com.tistory.dnjsrud.disney.moviegenre.MovieGenreRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.event.annotation.BeforeTestClass;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional

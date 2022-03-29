@@ -1,13 +1,12 @@
-package com.tistory.dnjsrud.disney.service;
+package com.tistory.dnjsrud.disney.user;
 
-import com.tistory.dnjsrud.disney.domain.User;
-import com.tistory.dnjsrud.disney.repository.UserRepository;
+import com.tistory.dnjsrud.disney.user.User;
+import com.tistory.dnjsrud.disney.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)

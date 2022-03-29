@@ -1,6 +1,6 @@
-package com.tistory.dnjsrud.disney.repository;
+package com.tistory.dnjsrud.disney.genre;
 
-import com.tistory.dnjsrud.disney.domain.Genre;
+import com.tistory.dnjsrud.disney.genre.Genre;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

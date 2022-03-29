@@ -1,7 +1,7 @@
 package com.tistory.dnjsrud.disney.repository;
 
-import com.tistory.dnjsrud.disney.domain.User;
-import org.assertj.core.api.Assertions;
+import com.tistory.dnjsrud.disney.user.User;
+import com.tistory.dnjsrud.disney.user.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

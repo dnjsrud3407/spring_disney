@@ -1,6 +1,6 @@
-package com.tistory.dnjsrud.disney.repository;
+package com.tistory.dnjsrud.disney.user;
 
-import com.tistory.dnjsrud.disney.domain.User;
+import com.tistory.dnjsrud.disney.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

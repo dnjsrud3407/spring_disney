@@ -1,11 +1,9 @@
-package com.tistory.dnjsrud.disney.service;
+package com.tistory.dnjsrud.disney.movie;
 
-import com.tistory.dnjsrud.disney.domain.Genre;
-import com.tistory.dnjsrud.disney.domain.Movie;
-import com.tistory.dnjsrud.disney.domain.MovieGenre;
-import com.tistory.dnjsrud.disney.repository.GenreRepository;
-import com.tistory.dnjsrud.disney.repository.MovieGenreRepository;
-import com.tistory.dnjsrud.disney.repository.MovieRepository;
+import com.tistory.dnjsrud.disney.genre.Genre;
+import com.tistory.dnjsrud.disney.moviegenre.MovieGenre;
+import com.tistory.dnjsrud.disney.genre.GenreRepository;
+import com.tistory.dnjsrud.disney.moviegenre.MovieGenreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,6 +49,8 @@ public class MovieService {
     public List<Movie> findMovies() {
         return movieRepository.findAll();
     }
+    
+    // 숨김 처리 안된 영화 조회
 
     // 영화 정보 조회
     public Movie findMovie(Long movieId) {

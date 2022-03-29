@@ -1,15 +1,13 @@
 package com.tistory.dnjsrud.disney.service;
 
-import com.tistory.dnjsrud.disney.domain.User;
-import com.tistory.dnjsrud.disney.repository.UserRepository;
-import org.assertj.core.api.Assertions;
+import com.tistory.dnjsrud.disney.user.User;
+import com.tistory.dnjsrud.disney.user.UserRepository;
+import com.tistory.dnjsrud.disney.user.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
