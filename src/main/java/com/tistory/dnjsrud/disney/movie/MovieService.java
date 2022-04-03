@@ -4,6 +4,8 @@ import com.tistory.dnjsrud.disney.genre.Genre;
 import com.tistory.dnjsrud.disney.moviegenre.MovieGenre;
 import com.tistory.dnjsrud.disney.genre.GenreRepository;
 import com.tistory.dnjsrud.disney.moviegenre.MovieGenreRepository;
+import com.tistory.dnjsrud.disney.review.Review;
+import com.tistory.dnjsrud.disney.review.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +22,7 @@ public class MovieService {
     private final MovieRepository movieRepository;
     private final GenreRepository genreRepository;
     private final MovieGenreRepository movieGenreRepository;
+    private final ReviewRepository reviewRepository;
 
     /**
      * 영화 등록 - 영화장르 생성 후 영화 등록
@@ -58,7 +61,7 @@ public class MovieService {
     }
 
     /**
-     * 영화 숨기기 처리
+     * 영화 숨기기 처리 -> 리뷰에서도 숨기기 처리 (bulk연산으로 수정 필요)
      * @param movieId
      * @param isVisible
      */
@@ -67,6 +70,12 @@ public class MovieService {
         Movie movie = movieRepository.findById(movieId).orElse(null);
         if(movie != null) {
             movie.changeVisible(isVisible);
+
+            // 리뷰 숨기기 처리
+            List<Review> findReview = reviewRepository.findByMovieId(movie.getId());
+            for (Review review : findReview) {
+                review.changeVisible(isVisible);
+            }
         }
     }
 

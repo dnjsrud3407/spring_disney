@@ -25,6 +25,9 @@ public class Review extends BaseEntity {
     @NotNull
     private String content;
 
+    @NotNull
+    private boolean isVisible;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
@@ -33,9 +36,10 @@ public class Review extends BaseEntity {
     @JoinColumn(name = "movie_id")
     private Movie movie;
 
-    private Review(float star, String content) {
+    private Review(float star, String content, boolean isVisible) {
         this.star = star;
         this.content = content;
+        this.isVisible = isVisible;
     }
 
     //== 연관관계 메서드 ==//
@@ -50,14 +54,18 @@ public class Review extends BaseEntity {
     }
 
     //== 생성 메서드 ==//
-    public static Review createReview(float star, String content, User user, Movie movie) {
-        Review review = new Review(star, content);
+    public static Review createReview(float star, String content, boolean isVisible, User user, Movie movie) {
+        Review review = new Review(star, content, isVisible);
         review.setUser(user);
         review.setMovie(movie);
         return review;
     }
 
     //== 비즈니스 로직 ==//
+    public void changeVisible(boolean isVisible) {
+        this.isVisible = isVisible;
+    }
+
     public void changeReview(float star, String content) {
         this.star = star;
         this.content = content;
