@@ -31,6 +31,9 @@ public class Movie extends BaseEntity {
     @NotNull
     private String content;
 
+    @NotNull
+    private float star;
+
     @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL)
     private List<MovieGenre> movieGenres = new ArrayList<>();
 
@@ -64,6 +67,10 @@ public class Movie extends BaseEntity {
     }
 
     //== 비즈니스 로직 ==//
+    public void changeStar(float star) {
+        this.star = star;
+    }
+
     public void changeVisible(boolean isVisible) {
         this.isVisible = isVisible;
     }

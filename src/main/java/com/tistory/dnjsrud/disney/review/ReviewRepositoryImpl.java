@@ -20,4 +20,14 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom{
                 .where(review.user.id.eq(userId), review.isVisible.eq(true))
                 .fetchOne();
     }
+
+    @Override
+    public Long countByMovieId(Long movieId) {
+        return queryFactory
+                .select(review.count())
+                .from(review)
+                .where(review.movie.id.eq(movieId), review.isVisible.eq(true))
+                .fetchOne();
+    }
+
 }

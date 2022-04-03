@@ -21,7 +21,7 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
 
     /**
-     * 리뷰 등록
+     * 리뷰 등록 -> 영화 평점 수정
      * @param star
      * @param content
      * @param userId
@@ -35,6 +35,11 @@ public class ReviewService {
         if (user != null && movie != null) {
             Review review = Review.createReview(star, content, movie.isVisible(), user, movie);
             reviewRepository.save(review);
+            
+            // 영화 평점 수정
+            float avg = (movie.getStar() + review.getStar()) / (reviewRepository.countByMovieId(movieId));
+            movie.changeStar(avg);
+
             return review.getId();
         }
         return null;
