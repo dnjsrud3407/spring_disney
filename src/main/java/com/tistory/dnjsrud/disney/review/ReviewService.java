@@ -33,7 +33,7 @@ public class ReviewService {
         User user = userRepository.findById(userId).orElse(null);
         Movie movie = movieRepository.findById(movieId).orElse(null);
         if (user != null && movie != null) {
-            Review review = Review.createReview(star, content, user, movie);
+            Review review = Review.createReview(star, content, movie.isVisible(), user, movie);
             reviewRepository.save(review);
             return review.getId();
         }
@@ -64,13 +64,15 @@ public class ReviewService {
         return reviewRepository.deleteByUserIdAndMovieId(userId, movieId);
     }
 
-    // 해당 영화 리뷰 조회
+    // 해당 영화 리뷰 전체 조회
     public List<Review> findReviewByMovie(Long movieId) {
         return reviewRepository.findByMovieId(movieId);
     }
 
-    // 해당 유저 리뷰 조회
+    // 해당 유저 리뷰 전체 조회
     public List<Review> findReviewByUser(Long userId) {
         return reviewRepository.findByUserId(userId);
     }
+
+    // 해당 영화
 }
