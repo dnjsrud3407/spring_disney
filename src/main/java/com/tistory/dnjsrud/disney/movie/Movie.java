@@ -3,6 +3,7 @@ package com.tistory.dnjsrud.disney.movie;
 import com.sun.istack.NotNull;
 import com.tistory.dnjsrud.disney.global.BaseEntity;
 import com.tistory.dnjsrud.disney.moviegenre.MovieGenre;
+import com.tistory.dnjsrud.disney.poster.Poster;
 import com.tistory.dnjsrud.disney.review.Review;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -34,8 +35,13 @@ public class Movie extends BaseEntity {
     @NotNull
     private float star;
 
+    @NotNull
     @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL)
     private List<MovieGenre> movieGenres = new ArrayList<>();
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "poster_id")
+    private Poster poster;
 
     @OneToMany(mappedBy = "movie")
     private List<Review> reviews = new ArrayList<>();
@@ -43,11 +49,12 @@ public class Movie extends BaseEntity {
     @NotNull
     private boolean isVisible;
 
-    private Movie(String title, LocalDateTime releaseDate, String content, boolean isVisible) {
+    private Movie(String title, LocalDateTime releaseDate, String content, boolean isVisible, Poster poster) {
         this.title = title;
         this.releaseDate = releaseDate;
         this.content = content;
         this.isVisible = isVisible;
+        this.poster = poster;
     }
 
     //== 연관관계 메서드 ==//
@@ -58,8 +65,8 @@ public class Movie extends BaseEntity {
 
     //== 생성 메서드 ==//
     public static Movie createMovie(String title, LocalDateTime releaseDate, String content,
-                                    boolean isVisible, ArrayList<MovieGenre> movieGenres) {
-        Movie movie = new Movie(title, releaseDate, content, isVisible);
+                                    boolean isVisible, ArrayList<MovieGenre> movieGenres, Poster poster) {
+        Movie movie = new Movie(title, releaseDate, content, isVisible, poster);
         for (MovieGenre movieGenre : movieGenres) {
             movie.addMovieGenre(movieGenre);
         }
