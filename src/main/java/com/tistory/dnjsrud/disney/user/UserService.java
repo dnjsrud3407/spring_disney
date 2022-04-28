@@ -1,5 +1,6 @@
 package com.tistory.dnjsrud.disney.user;
 
+import com.tistory.dnjsrud.disney.review.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +14,7 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final ReviewRepository reviewRepository;
 
     /**
      * 회원가입
@@ -53,8 +55,22 @@ public class UserService {
     }
 
     // 회원 정보 조회
-    public User findUser(Long id) {
-        return userRepository.findById(id).orElse(null);
+    public User findUser(Long userId) {
+        return userRepository.findById(userId).orElse(null);
+    }
+
+    /**
+     * UserInfoDto 조회
+     * @param userId
+     * @return UserInfoDto (nickname, email, reviewCount)
+     */
+    public UserInfoDto findUserInfoDto(Long userId) {
+        User findUser = findUser(userId);
+        if(findUser != null) {
+            UserInfoDto userInfo = new UserInfoDto(findUser.getNickname(), findUser.getEmail(), reviewRepository.countByUserId(userId));
+            return userInfo;
+        }
+        throw new IllegalStateException("존재하지 않는 회원입니다.");
     }
 
     // 회원 아이디 찾기
