@@ -36,8 +36,10 @@ public class MovieService {
     @Transactional
     public Long createMovie(String title, LocalDateTime releaseDate, String content, boolean visible, ArrayList<Long> genreIds, Poster poster) {
         // 포스터 저장
-        posterRepository.save(poster);
-        
+        if(poster != null) {
+            posterRepository.save(poster);
+        }
+
         // 영화장르 생성
         ArrayList<MovieGenre> movieGenres = new ArrayList<>();
         for (Long genreId : genreIds) {
@@ -94,7 +96,7 @@ public class MovieService {
     }
 
     /**
-     * 영화 숨기기 처리 -> 리뷰에서도 숨기기 처리 (bulk연산으로 수정 필요)
+     * 영화 숨기기 처리
      * @param movieId
      * @param isVisible
      */
@@ -103,12 +105,6 @@ public class MovieService {
         Movie movie = movieRepository.findById(movieId).orElse(null);
         if(movie != null) {
             movie.changeVisible(isVisible);
-
-            // 리뷰 숨기기 처리
-            List<Review> findReview = reviewRepository.findByMovieId(movie.getId());
-            for (Review review : findReview) {
-                review.changeVisible(isVisible);
-            }
         }
     }
 
