@@ -20,27 +20,47 @@ public class ReviewService {
 
     /**
      * 리뷰 등록 -> 영화 평점 수정
-     * @param star
-     * @param content
-     * @param userId
-     * @param movieId
+     * @param form
      * @return
      */
     @Transactional
-    public Long createReview(float star, String content, Long userId, Long movieId) {
-        User user = userRepository.findById(userId).orElse(null);
-        Movie movie = movieRepository.findById(movieId).orElse(null);
+    public Long createReview(ReviewCreateForm form) {
+        User user = userRepository.findById(form.getUserId()).orElse(null);
+        Movie movie = movieRepository.findById(form.getMovieId()).orElse(null);
         if (user != null && movie != null) {
-            Review review = Review.createReview(star, content, movie.isVisible(), user, movie);
+            Review review = Review.createReview(form.getStar(), form.getContent(), movie.isVisible(), user, movie);
             reviewRepository.save(review);
             
             // 영화 평점 수정
-            float avg = (movie.getStar() + review.getStar()) / (reviewRepository.countByMovieId(movieId));
+            float avg = (movie.getStar() + review.getStar()) / (reviewRepository.countByMovieId(movie.getId()));
             movie.changeStar(avg);
 
             return review.getId();
         }
         return null;
+    }
+
+    // 리뷰 수정
+    @Transactional
+    public Long modifyReview(ReviewModifyForm form) {
+        Review review = reviewRepository.findById(form.getReviewId()).orElse(null);
+        if(review != null) {
+            review.changeStar(form.getStar());
+            review.changeContent(form.getContent());
+
+//            reviewRepository.avgStarByMovieIdAndExceptUserId
+            changeMovieStar(form.getStar() - form.getOriginalStar(), form.getMovieId());
+
+            return review.getId();
+        }
+        return null;
+    }
+
+    @Transactional
+    public void changeMovieStar(float star, Long movieId) {
+        Movie movie = movieRepository.findById(movieId).orElse(null);
+        float avg = (movie.getStar() + star) / (reviewRepository.countByMovieId(movieId));
+        movie.changeStar(avg);
     }
 
     // 리뷰 전체 조회
@@ -61,19 +81,6 @@ public class ReviewService {
     // 해당 유저 리뷰 전체 조회
     public List<ReviewUserDto> findReviewUserDto(Long userId) {
         return reviewRepository.findReviewUserDtoByUserId(userId);
-    }
-
-    // 리뷰 수정
-    @Transactional
-    public void changeReview(float star, String content, Long userId, Long movieId) {
-        User user = userRepository.findById(userId).orElse(null);
-        Movie movie = movieRepository.findById(movieId).orElse(null);
-        if (user != null && movie != null) {
-            Review review = reviewRepository.findByUserIdAndMovieId(userId, movieId).orElse(null);
-            if (review != null) {
-                review.changeReview(star, content);
-            }
-        }
     }
 
     // 리뷰 삭제

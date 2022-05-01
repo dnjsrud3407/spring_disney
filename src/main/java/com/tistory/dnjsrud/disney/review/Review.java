@@ -58,8 +58,11 @@ public class Review extends BaseEntity {
     }
 
     //== 비즈니스 로직 ==//
-    public void changeReview(float star, String content) {
+    public void changeStar(float star) {
         this.star = star;
+    }
+
+    public void changeContent(String content) {
         this.content = content;
     }
 
