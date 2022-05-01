@@ -12,10 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -30,31 +28,51 @@ public class MovieService {
 
     /**
      * 영화 등록 - 영화장르 생성 후 영화 등록
-     * @param title, releaseDate, content, visible
+     * @param form
      * @return movieId
      */
     @Transactional
-    public Long createMovie(String title, LocalDateTime releaseDate, String content, boolean visible, ArrayList<Long> genreIds, Poster poster) {
+    public Long createMovie(MovieCreateForm form) {
         // 포스터 저장
+        Poster poster = form.getPoster();
         if(poster != null) {
             posterRepository.save(poster);
         }
 
         // 영화장르 생성
         ArrayList<MovieGenre> movieGenres = new ArrayList<>();
-        for (Long genreId : genreIds) {
+        for (Long genreId : form.getGenreIds()) {
             Genre genre = genreRepository.findById(genreId).orElse(null);
             if(genre != null) {
                 MovieGenre movieGenre = MovieGenre.createMovieGenre(genre);
-
                 movieGenres.add(movieGenre);
             }
         }
 
         // 영화 생성
-        Movie movie = Movie.createMovie(title, releaseDate, content, visible, movieGenres, poster);
+        Movie movie = Movie.createMovie(form.getTitle(), form.getReleaseDate(), form.getContent(), form.isVisible(), movieGenres, poster);
         movieRepository.save(movie);
+
         return movie.getId();
+    }
+
+    // 영화 수정
+    public Long modifyMovie(MovieModifyForm form) {
+        Movie movie = movieRepository.findById(form.getMovieId()).orElse(null);
+        if(movie != null) {
+            movie.changeTitle(form.getTitle());
+            movie.changeReleaseDate(form.getReleaseDate());
+            movie.changeContent(form.getContent());
+            movie.changeVisible(form.isVisible());
+
+            // 영화포스터 변경
+            changePoster(movie, form.getPoster());
+
+            // 영화장르 변경
+            changeMovieGenre(movie, form.getGenreIds());
+            return movie.getId();
+        }
+        return null;
     }
 
     // 영화 전체 조회
@@ -110,13 +128,13 @@ public class MovieService {
 
     /**
      * 영화장르 변경
-     * @param movieId
+     * @param movie
      * @param genreIds
      */
     @Transactional
-    public void changeMovieGenre(Long movieId, ArrayList<Long> genreIds) {
+    public void changeMovieGenre(Movie movie, ArrayList<Long> genreIds) {
         // 영화장르 삭제
-        movieGenreRepository.deleteByMovieId(movieId);
+        movieGenreRepository.deleteByMovieId(movie.getId());
 
         // 영화장르 생성
         ArrayList<MovieGenre> movieGenres = new ArrayList<>();
@@ -130,9 +148,24 @@ public class MovieService {
         }
 
         // 영화장르 변경
-        Movie movie = movieRepository.findById(movieId).orElse(null);
-        if (movie != null) {
-            movie.changeMovieGenre(movieGenres);
-        }
+        movie.changeMovieGenre(movieGenres);
+    }
+
+
+    /**
+     * 영화 포스터 변경
+     * @param movie
+     * @param poster
+     */
+    @Transactional
+    public void changePoster(Movie movie, Poster poster) {
+        // 포스터 삭제
+        posterRepository.deleteById(movie.getPoster().getId());
+
+        // 포스터 생성
+        posterRepository.save(poster);
+
+        // 영화포스터 변경
+        movie.changePoster(poster);
     }
 }
