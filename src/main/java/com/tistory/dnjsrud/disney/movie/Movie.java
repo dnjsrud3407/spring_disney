@@ -74,6 +74,22 @@ public class Movie extends BaseEntity {
     }
 
     //== 비즈니스 로직 ==//
+    public void changeTitle(String title) {
+        this.title = title;
+    }
+
+    public void changeReleaseDate(LocalDateTime releaseDate) {
+        this.releaseDate = releaseDate;
+    }
+
+    public void changeContent(String content) {
+        this.content = content;
+    }
+
+    public void changePoster(Poster poster) {
+        this.poster = poster;
+    }
+
     public void changeStar(float star) {
         this.star = star;
     }
