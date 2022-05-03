@@ -16,15 +16,32 @@ public class GenreService {
 
     /**
      * 장르 등록
-     * @param genre
+     * @param form
      * @return genreId
      */
     @Transactional
-    public Long createGenre(Genre genre) {
+    public Long createGenre(GenreCreateForm form) {
         // 장르 이름 중복 체크
-        validateDuplicateGenre(genre.getGenreName());
+        validateDuplicateGenre(form.getGenreName());
+
+        Genre genre = new Genre(form.getGenreName());
         genreRepository.save(genre);
         return genre.getId();
+    }
+
+    // 장르 수정
+    @Transactional
+    public Long modifyGenre(GenreModifyForm form) {
+        // 장르 이름 중복 체크
+        validateDuplicateGenre(form.getGenreName());
+
+        Genre genre = genreRepository.findById(form.getGenreId()).orElse(null);
+        if(genre != null) {
+            genre.changeGenreName(form.getGenreName());
+            return genre.getId();
+        }
+
+        return null;
     }
 
     private void validateDuplicateGenre(String genreName) {
@@ -44,16 +61,4 @@ public class GenreService {
         return genreRepository.findById(id).orElse(null);
     }
 
-    /**
-     * 장르 숨김 변경
-     * @param genreId
-     * @param isVisible
-     */
-    @Transactional
-    public void changeVisible(Long genreId, boolean isVisible) {
-        Genre genre = genreRepository.findById(genreId).orElse(null);
-        if(genre != null) {
-            genre.changeVisible(isVisible);
-        }
-    }
 }

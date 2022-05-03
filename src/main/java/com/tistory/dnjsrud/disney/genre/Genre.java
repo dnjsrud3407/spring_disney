@@ -25,4 +25,8 @@ public class Genre {
         this.genreName = genreName;
     }
 
+    //== 비즈니스 로직 ==//
+    public void changeGenreName(String genreName) {
+        this.genreName = genreName;
+    }
 }
