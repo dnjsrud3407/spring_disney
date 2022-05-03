@@ -21,16 +21,8 @@ public class Genre {
     @NotNull @Column(unique = true)
     private String genreName;
 
-    @NotNull
-    private boolean isVisible;
-
-    public Genre(String genreName, boolean isVisible) {
+    public Genre(String genreName) {
         this.genreName = genreName;
-        this.isVisible = isVisible;
     }
 
-    //== 비즈니스 로직 ==//
-    public void changeVisible(boolean isVisible) {
-        this.isVisible = isVisible;
-    }
 }
