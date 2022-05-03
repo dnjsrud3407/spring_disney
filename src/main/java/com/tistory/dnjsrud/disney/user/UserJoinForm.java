@@ -2,6 +2,7 @@ package com.tistory.dnjsrud.disney.user;
 
 import lombok.Getter;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 
 @Getter
@@ -20,6 +21,7 @@ public class UserJoinForm {
     private String nickname;
 
     @NotEmpty
+    @Email
     private String email;
 
     public UserJoinForm(String loginId, String password, String nickname, String email) {
