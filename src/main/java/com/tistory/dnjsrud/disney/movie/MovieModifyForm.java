@@ -1,13 +1,11 @@
 package com.tistory.dnjsrud.disney.movie;
 
-import com.tistory.dnjsrud.disney.moviegenre.MovieGenre;
 import com.tistory.dnjsrud.disney.poster.Poster;
 import lombok.Getter;
 
 import javax.validation.constraints.NotEmpty;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 public class MovieModifyForm {

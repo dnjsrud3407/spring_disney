@@ -32,7 +32,8 @@ public class ReviewService {
             reviewRepository.save(review);
             
             // 영화 평점 수정
-            float avg = (movie.getStar() + review.getStar()) / (reviewRepository.countByMovieId(movie.getId()));
+            int userCnt = Math.toIntExact(reviewRepository.countByMovieId(form.getMovieId()));
+            float avg = ((movie.getStar() * (userCnt - 1)) + review.getStar()) / userCnt;
             movie.changeStar(avg);
 
             return review.getId();
@@ -48,19 +49,15 @@ public class ReviewService {
             review.changeStar(form.getStar());
             review.changeContent(form.getContent());
 
-//            reviewRepository.avgStarByMovieIdAndExceptUserId
-            changeMovieStar(form.getStar() - form.getOriginalStar(), form.getMovieId());
+            // 영화 평점 수정
+            Movie movie = movieRepository.findById(form.getMovieId()).orElse(null);
+            int userCnt = Math.toIntExact(reviewRepository.countByMovieId(form.getMovieId()));
+            float avg = (((movie.getStar() * userCnt) - form.getOriginalStar()) + form.getStar()) / userCnt;
+            movie.changeStar(avg);
 
             return review.getId();
         }
         return null;
-    }
-
-    @Transactional
-    public void changeMovieStar(float star, Long movieId) {
-        Movie movie = movieRepository.findById(movieId).orElse(null);
-        float avg = (movie.getStar() + star) / (reviewRepository.countByMovieId(movieId));
-        movie.changeStar(avg);
     }
 
     // 리뷰 전체 조회
