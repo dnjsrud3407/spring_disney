@@ -1,33 +1,30 @@
 package com.tistory.dnjsrud.disney.user;
 
-import lombok.Getter;
+import lombok.*;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 
-@Getter
+@ToString
+@Getter @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserJoinForm {
 
-    @NotEmpty
+    @NotEmpty(message = "아이디는 필수입니다.")
     private String loginId;
 
-    @NotEmpty
+    @NotEmpty(message = "비밀번호는 필수입니다.")
     private String password;
 
-    @NotEmpty
+    @NotEmpty(message = "비밀번호 확인은 필수입니다.")
     private String passwordConfirm;
 
-    @NotEmpty
+    @NotEmpty(message = "닉네임은 필수입니다.")
     private String nickname;
 
-    @NotEmpty
+    @NotEmpty(message = "이메일은 필수입니다.")
     @Email
     private String email;
 
-    public UserJoinForm(String loginId, String password, String nickname, String email) {
-        this.loginId = loginId;
-        this.password = password;
-        this.nickname = nickname;
-        this.email = email;
-    }
 }
