@@ -2,6 +2,7 @@ package com.tistory.dnjsrud.disney.user;
 
 import com.tistory.dnjsrud.disney.review.ReviewRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +16,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final ReviewRepository reviewRepository;
+    private final MessageSource ms;
 
     /**
      * 회원가입
@@ -35,17 +37,17 @@ public class UserService {
         // 동시성 문제가 발생할 수 있다
         Optional<User> findUser = userRepository.findByLoginId(form.getLoginId());
         if (findUser.isPresent()) {
-            throw new IllegalStateException("이미 존재하는 아이디입니다.");
+            throw new IllegalStateException(ms.getMessage("user.loginIdDuplicate", null, null));
         }
 
-        findUser = userRepository.findByEmail(form.getNickname());
+        findUser = userRepository.findByNickname(form.getNickname());
         if (findUser.isPresent()) {
-            throw new IllegalStateException("이미 존재하는 닉네임입니다.");
+            throw new IllegalStateException(ms.getMessage("user.nicknameDuplicate", null, null));
         }
 
         findUser = userRepository.findByEmail(form.getEmail());
         if (findUser.isPresent()) {
-            throw new IllegalStateException("이미 존재하는 이메일입니다.");
+            throw new IllegalStateException(ms.getMessage("user.emailDuplicate", null, null));
         }
     }
 
