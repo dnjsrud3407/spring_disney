@@ -6,6 +6,7 @@ import lombok.Getter;
 import javax.validation.constraints.NotEmpty;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 
 @Getter
 public class MovieModifyForm {
@@ -17,7 +18,7 @@ public class MovieModifyForm {
     private String title;
 
     @NotEmpty
-    private LocalDateTime releaseDate;
+    private Date releaseDate;
 
     @NotEmpty
     private String content;
@@ -29,15 +30,15 @@ public class MovieModifyForm {
     private Poster poster;
 
     @NotEmpty
-    private boolean isVisible;
+    private boolean visible;
 
-    public MovieModifyForm(Long movieId, String title, LocalDateTime releaseDate, String content, ArrayList<Long> genreIds, Poster poster, boolean isVisible) {
+    public MovieModifyForm(Long movieId, String title, Date releaseDate, String content, ArrayList<Long> genreIds, Poster poster, boolean visible) {
         this.movieId = movieId;
         this.title = title;
         this.releaseDate = releaseDate;
         this.content = content;
         this.genreIds = genreIds;
         this.poster = poster;
-        this.isVisible = isVisible;
+        this.visible = visible;
     }
 }

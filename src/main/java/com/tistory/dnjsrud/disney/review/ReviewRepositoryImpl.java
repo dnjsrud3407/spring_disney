@@ -26,7 +26,7 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom{
         return queryFactory
                 .select(review.count())
                 .from(review)
-                .join(review.movie, movie).on(review.user.id.eq(userId), movie.isVisible.eq(true))
+                .join(review.movie, movie).on(review.user.id.eq(userId), movie.visible.eq(true))
                 .fetchOne();
     }
 
@@ -44,7 +44,7 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom{
         return queryFactory
                 .select(new QReviewDetailDto(review.id, review.star, review.content, user.nickname))
                 .from(movie)
-                .join(movie.reviews, review).on(movie.id.eq(movieId), movie.isVisible.eq(true))
+                .join(movie.reviews, review).on(movie.id.eq(movieId), movie.visible.eq(true))
                 .join(review.user, user)
                 .fetch();
     }
@@ -66,7 +66,7 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom{
         return queryFactory
                 .select(new QReviewUserDto(movie.id, poster.fileFullPath, review.star, review.content))
                 .from(review)
-                .join(review.movie, movie).on(review.user.id.eq(userId), movie.isVisible.eq(true))
+                .join(review.movie, movie).on(review.user.id.eq(userId), movie.visible.eq(true))
                 .join(movie.poster, poster)
                 .fetch();
     }

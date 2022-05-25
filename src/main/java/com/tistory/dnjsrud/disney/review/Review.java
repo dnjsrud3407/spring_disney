@@ -50,7 +50,7 @@ public class Review extends BaseEntity {
     }
 
     //== 생성 메서드 ==//
-    public static Review createReview(float star, String content, boolean isVisible, User user, Movie movie) {
+    public static Review createReview(float star, String content, boolean visible, User user, Movie movie) {
         Review review = new Review(star, content);
         review.setUser(user);
         review.setMovie(movie);

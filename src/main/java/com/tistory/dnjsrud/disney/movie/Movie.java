@@ -10,8 +10,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -27,7 +27,7 @@ public class Movie extends BaseEntity {
     private String title;
 
     @NotNull
-    private LocalDateTime releaseDate;
+    private Date releaseDate;
 
     @NotNull
     private String content;
@@ -47,13 +47,13 @@ public class Movie extends BaseEntity {
     private List<Review> reviews = new ArrayList<>();
 
     @NotNull
-    private boolean isVisible;
+    private boolean visible;
 
-    private Movie(String title, LocalDateTime releaseDate, String content, boolean isVisible, Poster poster) {
+    private Movie(String title, Date releaseDate, String content, boolean visible, Poster poster) {
         this.title = title;
         this.releaseDate = releaseDate;
         this.content = content;
-        this.isVisible = isVisible;
+        this.visible = visible;
         this.poster = poster;
     }
 
@@ -64,9 +64,9 @@ public class Movie extends BaseEntity {
     }
 
     //== 생성 메서드 ==//
-    public static Movie createMovie(String title, LocalDateTime releaseDate, String content,
-                                    boolean isVisible, ArrayList<MovieGenre> movieGenres, Poster poster) {
-        Movie movie = new Movie(title, releaseDate, content, isVisible, poster);
+    public static Movie createMovie(String title, Date releaseDate, String content,
+                                    boolean visible, ArrayList<MovieGenre> movieGenres, Poster poster) {
+        Movie movie = new Movie(title, releaseDate, content, visible, poster);
         for (MovieGenre movieGenre : movieGenres) {
             movie.addMovieGenre(movieGenre);
         }
@@ -78,7 +78,7 @@ public class Movie extends BaseEntity {
         this.title = title;
     }
 
-    public void changeReleaseDate(LocalDateTime releaseDate) {
+    public void changeReleaseDate(Date releaseDate) {
         this.releaseDate = releaseDate;
     }
 
@@ -94,8 +94,8 @@ public class Movie extends BaseEntity {
         this.star = star;
     }
 
-    public void changeVisible(boolean isVisible) {
-        this.isVisible = isVisible;
+    public void changeVisible(boolean visible) {
+        this.visible = visible;
     }
 
     public void changeMovieGenre(ArrayList<MovieGenre> movieGenres) {

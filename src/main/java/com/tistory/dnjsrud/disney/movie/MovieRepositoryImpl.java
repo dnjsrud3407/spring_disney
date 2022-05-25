@@ -22,7 +22,7 @@ public class MovieRepositoryImpl implements MovieRepositoryCustom {
                 .select(new QMovieListDto(movie.id, movie.title, movie.star, poster.fileFullPath))
                 .from(movie)
                 .join(movie.poster, poster)
-                .where(movie.isVisible.eq(true))
+                .where(movie.visible.eq(true))
                 .fetch();
     }
 
@@ -33,7 +33,7 @@ public class MovieRepositoryImpl implements MovieRepositoryCustom {
                 .select(new QMovieDetailDto(movie.id, movie.title, movie.star, movie.content, poster.fileFullPath))
                 .from(movie)
                 .join(movie.poster, poster)
-                .where(movie.id.eq(movieId), movie.isVisible.eq(true))
+                .where(movie.id.eq(movieId), movie.visible.eq(true))
                 .fetchOne()
         );
     }
@@ -44,8 +44,7 @@ public class MovieRepositoryImpl implements MovieRepositoryCustom {
                 .select(genre.genreName)
                 .from(movieGenre)
                 .leftJoin(movieGenre.genre, genre)
-                .where(movieGenre.movie.id.eq(movieId),
-                        genre.isVisible.eq(true))
+                .where(movieGenre.movie.id.eq(movieId))
                 .fetch();
     }
 }
