@@ -1,19 +1,23 @@
 package com.tistory.dnjsrud.disney.movie;
 
 import com.tistory.dnjsrud.disney.genre.Genre;
-import com.tistory.dnjsrud.disney.moviegenre.MovieGenre;
 import com.tistory.dnjsrud.disney.genre.GenreRepository;
+import com.tistory.dnjsrud.disney.moviegenre.MovieGenre;
 import com.tistory.dnjsrud.disney.moviegenre.MovieGenreRepository;
 import com.tistory.dnjsrud.disney.poster.Poster;
 import com.tistory.dnjsrud.disney.poster.PosterRepository;
-import com.tistory.dnjsrud.disney.review.Review;
 import com.tistory.dnjsrud.disney.review.ReviewRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -25,6 +29,10 @@ public class MovieService {
     private final MovieGenreRepository movieGenreRepository;
     private final ReviewRepository reviewRepository;
     private final PosterRepository posterRepository;
+    private final MessageSource ms;
+
+    @Value("${file.dir}")
+    private String fileDir;
 
     /**
      * 영화 등록 - 영화장르 생성 후 영화 등록
@@ -32,11 +40,18 @@ public class MovieService {
      * @return movieId
      */
     @Transactional
-    public Long createMovie(MovieCreateForm form) {
+    public Long createMovie(MovieCreateForm form) throws IOException {
+        // 영화 중복 체크
+        validateDuplicateMovie(form);
+
         // 포스터 저장
-        Poster poster = form.getPoster();
-        if(poster != null) {
+        Poster poster = null;
+        if(form.getFile() != null) {
+            poster = Poster.createPoster(form.getFile());
             posterRepository.save(poster);
+
+            String fullPath = fileDir + poster.getStoredFileName();
+            form.getFile().transferTo(new File(fullPath));
         }
 
         // 영화장르 생성
@@ -55,6 +70,14 @@ public class MovieService {
 
         return movie.getId();
     }
+
+    private void validateDuplicateMovie(MovieCreateForm form) {
+        Optional<Movie> findMovie = movieRepository.findByTitle(form.getTitle());
+        if (findMovie.isPresent()) {
+            throw new IllegalStateException(ms.getMessage("movie.titleDuplicate", null, null));
+        }
+    }
+
 
     // 영화 수정
     public Long modifyMovie(MovieModifyForm form) {
@@ -116,13 +139,13 @@ public class MovieService {
     /**
      * 영화 숨기기 처리
      * @param movieId
-     * @param isVisible
+     * @param visible
      */
     @Transactional
-    public void changeVisible(Long movieId, boolean isVisible) {
+    public void changeVisible(Long movieId, boolean visible) {
         Movie movie = movieRepository.findById(movieId).orElse(null);
         if(movie != null) {
-            movie.changeVisible(isVisible);
+            movie.changeVisible(visible);
         }
     }
 
