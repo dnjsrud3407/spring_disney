@@ -19,7 +19,7 @@ public class MovieRepositoryImpl implements MovieRepositoryCustom {
     @Override
     public List<MovieListDto> findMovieListDto() {
         return queryFactory
-                .select(new QMovieListDto(movie.id, movie.title, movie.star, poster.fileFullPath))
+                .select(new QMovieListDto(movie.id, movie.title, movie.star, poster.storedFileName))
                 .from(movie)
                 .join(movie.poster, poster)
                 .where(movie.visible.eq(true))
@@ -30,12 +30,21 @@ public class MovieRepositoryImpl implements MovieRepositoryCustom {
     public Optional<MovieDetailDto> findMovieDetailDtoByMovieId(Long movieId) {
         return Optional.ofNullable(
                 queryFactory
-                .select(new QMovieDetailDto(movie.id, movie.title, movie.star, movie.content, poster.fileFullPath))
+                .select(new QMovieDetailDto(movie.id, movie.title, movie.star, movie.content, poster.storedFileName))
                 .from(movie)
                 .join(movie.poster, poster)
                 .where(movie.id.eq(movieId), movie.visible.eq(true))
                 .fetchOne()
         );
+    }
+
+    @Override
+    public List<MovieAdminListDto> findMovieAdminListDto() {
+        return queryFactory
+                .select(new QMovieAdminListDto(movie.id, movie.title, movie.releaseDate, movie.star, poster.storedFileName, movie.visible))
+                .from(movie)
+                .join(movie.poster, poster)
+                .fetch();
     }
 
     @Override
@@ -47,4 +56,5 @@ public class MovieRepositoryImpl implements MovieRepositoryCustom {
                 .where(movieGenre.movie.id.eq(movieId))
                 .fetch();
     }
+
 }

@@ -35,7 +35,7 @@ public class GenreService {
     @Transactional
     public Long modifyGenre(GenreModifyForm form) {
         // 장르 이름 중복 체크
-        validateDuplicateGenre(form.getGenreName());
+        validateDuplicateGenreModify(form.getGenreId(), form.getGenreName());
 
         Genre genre = genreRepository.findById(form.getGenreId()).orElse(null);
         if(genre != null) {
@@ -46,8 +46,25 @@ public class GenreService {
         return null;
     }
 
+    /**
+     * 장르 생성 시 중복 체크
+     * - 장르 이름만 체크한다
+     * @param genreName
+     */
     private void validateDuplicateGenre(String genreName) {
         Optional<Genre> findGenre = genreRepository.findByGenreName(genreName);
+        if (findGenre.isPresent()) {
+            throw new IllegalStateException(ms.getMessage("genre.genreNameDuplicate", null, null));
+        }
+    }
+
+    /**
+     * 장르 수정 시 중복 체크
+     * - 장르 이름만 체크한다
+     * @param genreName
+     */
+    private void validateDuplicateGenreModify(Long id, String genreName) {
+        Optional<Genre> findGenre = genreRepository.findByIdNotAndGenreName(id, genreName);
         if (findGenre.isPresent()) {
             throw new IllegalStateException(ms.getMessage("genre.genreNameDuplicate", null, null));
         }

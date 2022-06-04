@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
@@ -71,6 +72,11 @@ public class MovieService {
         return movie.getId();
     }
 
+    /**
+     * 영화 생성 시 중복 체크
+     * - 영화 제목만 체크한다
+     * @param form
+     */
     private void validateDuplicateMovie(MovieCreateForm form) {
         Optional<Movie> findMovie = movieRepository.findByTitle(form.getTitle());
         if (findMovie.isPresent()) {
@@ -78,9 +84,24 @@ public class MovieService {
         }
     }
 
+    /**
+     * 영화 수정 시 중복 체크 
+     * - 영화 제목만 체크한다
+     * @param form
+     */
+    private void validateDuplicateMovieModify(MovieModifyForm form) {
+        Optional<Movie> findMovie = movieRepository.findByIdNotAndTitle(form.getMovieId(), form.getTitle());
+        if (findMovie.isPresent()) {
+            throw new IllegalStateException(ms.getMessage("movie.titleDuplicate", null, null));
+        }
+    }
 
     // 영화 수정
-    public Long modifyMovie(MovieModifyForm form) {
+    @Transactional
+    public Long modifyMovie(MovieModifyForm form) throws IOException {
+        // 영화 수정 시 중복 체크
+        validateDuplicateMovieModify(form);
+
         Movie movie = movieRepository.findById(form.getMovieId()).orElse(null);
         if(movie != null) {
             movie.changeTitle(form.getTitle());
@@ -89,7 +110,10 @@ public class MovieService {
             movie.changeVisible(form.isVisible());
 
             // 영화포스터 변경
-            changePoster(movie, form.getPoster());
+            // form 에 포스터 변경할 때만 시행한다
+            if(!form.getFile().isEmpty()) {
+                changePoster(movie, form.getFile());
+            }
 
             // 영화장르 변경
             changeMovieGenre(movie, form.getGenreIds());
@@ -101,6 +125,25 @@ public class MovieService {
     // 영화 전체 조회
     public List<Movie> findMovies() {
         return movieRepository.findAll();
+    }
+
+    /**
+     * Admin 단 - 영화 전체 조회
+     * @return List<MovieAdminListDto>
+     */
+    public List<MovieAdminListDto> findMovieAdminListDto() {
+        List<MovieAdminListDto> movieAdminListDto = movieRepository.findMovieAdminListDto();
+        for (MovieAdminListDto adminListDto : movieAdminListDto) {
+            // 장르 이름 list 구하기
+            List<String> genreNameList = movieRepository.findGenreNameByMovieId(adminListDto.getId());
+            adminListDto.changeGenreList(genreNameList);
+
+            // 리뷰 Count 구하기
+            Long reviewCount = reviewRepository.countByMovieId(adminListDto.getId());
+            adminListDto.changeReviewCount(reviewCount);
+        }
+
+        return movieAdminListDto;
     }
 
     /**
@@ -137,19 +180,6 @@ public class MovieService {
     }
 
     /**
-     * 영화 숨기기 처리
-     * @param movieId
-     * @param visible
-     */
-    @Transactional
-    public void changeVisible(Long movieId, boolean visible) {
-        Movie movie = movieRepository.findById(movieId).orElse(null);
-        if(movie != null) {
-            movie.changeVisible(visible);
-        }
-    }
-
-    /**
      * 영화장르 변경
      * @param movie
      * @param genreIds
@@ -178,17 +208,23 @@ public class MovieService {
     /**
      * 영화 포스터 변경
      * @param movie
-     * @param poster
+     * @param file
      */
     @Transactional
-    public void changePoster(Movie movie, Poster poster) {
-        // 포스터 삭제
-        posterRepository.deleteById(movie.getPoster().getId());
+    public void changePoster(Movie movie, MultipartFile file) throws IOException {
+        // 기존 포스터 찾기
+        Poster poster = movie.getPoster();
 
-        // 포스터 생성
-        posterRepository.save(poster);
+        // 기존 파일 삭제
+        String originalFileFullPath = fileDir + poster.getStoredFileName();
+        File originalFile = new File(originalFileFullPath);
+        originalFile.delete();
 
-        // 영화포스터 변경
-        movie.changePoster(poster);
+        // 포스터 변경
+        poster.changePoster(file);
+
+        // 파일 저장
+        String fullPath = fileDir + poster.getStoredFileName();
+        file.transferTo(new File(fullPath));
     }
 }

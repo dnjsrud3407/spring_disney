@@ -7,4 +7,5 @@ public interface MovieRepositoryCustom {
     List<MovieListDto> findMovieListDto();
     Optional<MovieDetailDto> findMovieDetailDtoByMovieId(Long movieId);
     List<String> findGenreNameByMovieId(Long movieId);
+    List<MovieAdminListDto> findMovieAdminListDto();
 }

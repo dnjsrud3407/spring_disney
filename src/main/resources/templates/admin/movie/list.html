@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <!-- Header -->
+    <div th:replace="~{fragment/header :: header}"></div>
+    <body class="h-100">
+    <!-- Navigation-->
+    <div th:replace="~{fragment/navigation :: navigation}"></div>
+    <main>
+        <section>
+            <div class="my10r">
+                <div class="text-center">
+                    <h2 class="fw-bold">영화 목록</h2>
+                    <div class="text-webkit-center">
+                        <form th:action method="post">
+                            <table class="genre-list">
+                                <tr class="bg-bisque">
+                                    <td style="width: 10%;">번호</td>
+                                    <td>포스터</td>
+                                    <td style="width: 20%;">영화 제목</td>
+                                    <td>개봉일</td>
+                                    <td>평점</td>
+                                    <td>장르</td>
+                                    <td>리뷰수</td>
+                                    <td>활성화</td>
+                                    <td style="width: 100px;"></td>
+                                </tr>
+                                <tr th:each="movie : ${movieAdminListDto}">
+                                    <td th:text="${movie.id}">id</td>
+                                    <td><img th:src="|/poster/${movie.storedFileName}|" width="130"></td>
+                                    <td th:text="${movie.title}">영화 제목</td>
+                                    <td th:text="${#calendars.format(movie.releaseDate, 'yyyy-MM-dd')}">개봉일</td>
+                                    <td th:text="${movie.star}">평점</td>
+                                    <td>
+                                        <span th:each="genreName : ${movie.genreNameList}">
+                                            <div class="badge bg-primary bg-gradient rounded-pill mb0p3r" th:text="${genreName}"></div>
+                                        </span>
+                                    </td>
+                                    <td th:text="${movie.reviewCount}">리뷰수</td>
+                                    <td><input type="checkbox" th:checked="${movie.visible}" disabled/></td>
+                                    <td><a th:href="@{/admin/movie/modify/{id} (id=${movie.id})}" class="btn-mini">수정</a></td>
+                                </tr>
+                            </table>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <!-- Footer-->
+    <div th:replace="~{fragment/footer :: footer}"></div>
+    </body>
+</html>

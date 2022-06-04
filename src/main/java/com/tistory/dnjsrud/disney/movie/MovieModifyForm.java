@@ -1,44 +1,49 @@
 package com.tistory.dnjsrud.disney.movie;
 
+import com.tistory.dnjsrud.disney.moviegenre.MovieGenre;
 import com.tistory.dnjsrud.disney.poster.Poster;
-import lombok.Getter;
+import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
-import java.time.LocalDateTime;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
-@Getter
+@ToString
+@Getter @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class MovieModifyForm {
 
-    @NotEmpty
+    @NotNull
     private Long movieId;
 
-    @NotEmpty
+    @NotBlank(message = "제목은 필수입니다.")
     private String title;
 
-    @NotEmpty
+    @NotNull(message = "개봉일은 필수입니다.")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date releaseDate;
 
-    @NotEmpty
+    @NotBlank(message = "줄거리는 필수입니다.")
     private String content;
 
-    @NotEmpty
-    private ArrayList<Long> genreIds;
+    @NotEmpty(message = "장르는 필수입니다.")
+    private ArrayList<Long> genreIds = new ArrayList<>();
 
-    @NotEmpty
-    private Poster poster;
+    private String originalFileName;
 
-    @NotEmpty
+    private MultipartFile file;
+
     private boolean visible;
 
-    public MovieModifyForm(Long movieId, String title, Date releaseDate, String content, ArrayList<Long> genreIds, Poster poster, boolean visible) {
-        this.movieId = movieId;
-        this.title = title;
-        this.releaseDate = releaseDate;
-        this.content = content;
-        this.genreIds = genreIds;
-        this.poster = poster;
-        this.visible = visible;
+    public void changeGenreIds(List<MovieGenre> movieGenres) {
+        for (MovieGenre movieGenre : movieGenres) {
+            this.genreIds.add(movieGenre.getGenre().getId());
+        }
     }
 }

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <!-- Header -->
+    <div th:replace="~{fragment/header :: header}"></div>
+    <body class="h-100">
+    <!-- Navigation-->
+    <div th:replace="~{fragment/navigation :: navigation}"></div>
+    <main>
+        <section>
+            <div class="my10r">
+                <div class="text-center">
+                    <h2 class="fw-bold">장르 목록</h2>
+                    <div class="text-webkit-center">
+                        <form th:action method="post">
+                            <table class="genre-list">
+                                <tr class="bg-bisque">
+                                    <td style="width: 20%;">번호</td>
+                                    <td>장르</td>
+                                    <td style="width: 100px;"></td>
+                                </tr>
+                                <tr th:each="genre : ${genreList}">
+                                    <td th:text="${genre.id}">id</td>
+                                    <td th:text="${genre.genreName}">장르명</td>
+                                    <td><a th:href="@{/admin/genre/modify/{id} (id=${genre.id})}" class="btn-mini">수정</a></td>
+                                </tr>
+                            </table>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <!-- Footer-->
+    <div th:replace="~{fragment/footer :: footer}"></div>
+    </body>
+</html>
