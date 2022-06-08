@@ -30,6 +30,7 @@ public class Movie extends BaseEntity {
     private Date releaseDate;
 
     @NotNull
+    @Column(length = 4000)
     private String content;
 
     @NotNull

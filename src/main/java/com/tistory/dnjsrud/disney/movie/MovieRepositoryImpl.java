@@ -1,6 +1,11 @@
 package com.tistory.dnjsrud.disney.movie;
 
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,20 +22,30 @@ public class MovieRepositoryImpl implements MovieRepositoryCustom {
     public MovieRepositoryImpl(JPAQueryFactory queryFactory) {this.queryFactory = queryFactory;}
 
     @Override
-    public List<MovieListDto> findMovieListDto() {
-        return queryFactory
-                .select(new QMovieListDto(movie.id, movie.title, movie.star, poster.storedFileName))
+    public Page<MovieListDto> findMovieListDto(Pageable pageable) {
+        List<MovieListDto> content = queryFactory
+                .select(new QMovieListDto(movie.id, movie.title, movie.releaseDate, movie.star, poster.storedFileName))
                 .from(movie)
                 .join(movie.poster, poster)
                 .where(movie.visible.eq(true))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
+
+        JPAQuery<Long> countQuery = queryFactory
+                .select(movie.count())
+                .from(movie)
+                .join(movie.poster, poster)
+                .where(movie.visible.eq(true));
+
+        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
     }
 
     @Override
     public Optional<MovieDetailDto> findMovieDetailDtoByMovieId(Long movieId) {
         return Optional.ofNullable(
                 queryFactory
-                .select(new QMovieDetailDto(movie.id, movie.title, movie.star, movie.content, poster.storedFileName))
+                .select(new QMovieDetailDto(movie.id, movie.title, movie.releaseDate, movie.star, movie.content, poster.storedFileName))
                 .from(movie)
                 .join(movie.poster, poster)
                 .where(movie.id.eq(movieId), movie.visible.eq(true))

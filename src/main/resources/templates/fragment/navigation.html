@@ -1,26 +1,43 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
   <body>
-    <nav th:fragment="navigation" class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <div class="container px-5">
-        <a class="navbar-brand" th:href="@{/}">Disney</a>
-        <div class="collapse navbar-collapse">
-          <ul class="navbar-nav mb-2 mb-lg-0">
-            <li class="nav-item"><a class="nav-link" th:href="@{/}">영화 소개</a></li>
-          </ul>
+    <nav th:fragment="navigation" class="bg-dark">
+      <div class="nav-div">
+        <div class="floatL">
+          <a class="logo" th:href="@{/}" href="./index.html">Disney</a>
         </div>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-            <li class="nav-item">
-              <div class="input-group mb-2">
-                <input class="form-control" type="text" placeholder="영화 검색" aria-label="Email address..." aria-describedby="button-newsletter" />
-                <button class="btn btn-outline-light" id="button-newsletter" type="button"><i class="fa fa-search"></i></button>
-              </div>
-            </li>
-            <li class="nav-item"><a class="nav-link" th:href="@{/user/login}">로그인/회원가입</a></li>
-            <li class="nav-item"><a class="nav-link" th:href="@{/user/myPage}">마이페이지</a></li>
-          </ul>
+        <div class="floatL">
+          <a th:href="@{/movie/list}" href="./movie/movieList.html">영화 소개</a> |
+          <a th:href="@{/admin/movie/create}" href="./movie/movieList.html">영화 등록</a> |
+          <a th:href="@{/admin/movie/list}" href="./movie/movieList.html">영화 목록</a> |
+          <a th:href="@{/admin/genre/create}" href="./movie/movieList.html">장르 등록</a> |
+          <a th:href="@{/admin/genre/list}" href="./movie/movieList.html">장르 목록</a>
+        </div>
+        <div class="floatR">
+          <a th:href="@{/user/login}" href="./user/login.html">로그인/회원가입</a>
+          <a th:href="@{/user/myPage}" href="./user/myPage2.html">마이페이지</a>
+        </div>
+        <div class="floatR search">
+          <input class="search-input" type="text" placeholder="영화제목 입력">
+          <img class="search-img" src="https://s3.ap-northeast-2.amazonaws.com/cdn.wecode.co.kr/icon/search.png">
+        </div>
+      </div>
+    </nav>
+    <nav th:fragment="navigation-movie" class="bg-dark">
+      <div class="nav-div">
+        <div class="floatL">
+          <a class="logo" th:href="@{/}" href="./index.html">Disney</a>
+        </div>
+        <div class="floatL">
+          <a th:href="@{/movie/list}" href="./movie/movieList.html">영화 소개</a> |
+          <a th:href="@{/admin/movie/create}" href="./movie/movieList.html">영화 등록</a> |
+          <a th:href="@{/admin/movie/list}" href="./movie/movieList.html">영화 목록</a> |
+          <a th:href="@{/admin/genre/create}" href="./movie/movieList.html">장르 등록</a> |
+          <a th:href="@{/admin/genre/list}" href="./movie/movieList.html">장르 목록</a>
+        </div>
+        <div class="floatR">
+          <a th:href="@{/user/login}" href="./user/login.html">로그인/회원가입</a>
+          <a th:href="@{/user/myPage}" href="./user/myPage2.html">마이페이지</a>
         </div>
       </div>
     </nav>

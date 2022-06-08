@@ -10,6 +10,8 @@ import com.tistory.dnjsrud.disney.review.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -148,16 +150,21 @@ public class MovieService {
 
     /**
      * User단 - 영화 전체 조회(숨김 처리 안된 영화 조회)
-     * @return List<MovieListDto> MovieListDto : movieId, title, star, genreList
+     * @return List<MovieListDto> MovieListDto
      */
-    public List<MovieListDto> findMovieListDto() {
+    public Page<MovieListDto> findMovieListDto(Pageable pageable) {
         // Page 처리 필요
-        List<MovieListDto> movieListDto = movieRepository.findMovieListDto();
-        for (MovieListDto movieDto : movieListDto) {
+        Page<MovieListDto> result = movieRepository.findMovieListDto(pageable);
+        for (MovieListDto movieDto : result.getContent()) {
+            // 장르 이름 list 구하기
             List<String> genreList = movieRepository.findGenreNameByMovieId(movieDto.getId());
             movieDto.changeGenreList(genreList);
+
+            // 리뷰 Count 구하기
+            Long reviewCount = reviewRepository.countByMovieId(movieDto.getId());
+            movieDto.changeReviewCount(reviewCount);
         }
-        return movieListDto;
+        return result;
     }
 
     // 영화 정보 조회
