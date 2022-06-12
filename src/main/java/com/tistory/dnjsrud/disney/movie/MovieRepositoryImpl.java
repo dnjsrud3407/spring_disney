@@ -1,7 +1,9 @@
 package com.tistory.dnjsrud.disney.movie;
 
+import com.querydsl.core.types.Predicate;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.tistory.dnjsrud.disney.moviegenre.QMovieGenre;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -39,6 +41,43 @@ public class MovieRepositoryImpl implements MovieRepositoryCustom {
                 .where(movie.visible.eq(true));
 
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
+    }
+
+    @Override
+    public Page<MovieListDto> searchMovieListDto(Pageable pageable, MovieSearchCondition condition) {
+        List<MovieListDto> content = queryFactory
+                .select(new QMovieListDto(movie.id, movie.title, movie.releaseDate, movie.star, poster.storedFileName)).distinct()
+                .from(movie)
+                .join(movie.poster, poster)
+                .join(movie.movieGenres, movieGenre)
+                .join(movieGenre.genre, genre)
+                .where(movie.visible.eq(true),
+                        movieTitleLike(condition.getTitle()),
+                        genreIdEq(condition.getGenreId()))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        JPAQuery<Long> countQuery = queryFactory
+                .select(movie.countDistinct())
+                .from(movie)
+                .join(movie.poster, poster)
+                .join(movie.movieGenres, movieGenre)
+                .join(movieGenre.genre, genre)
+                .where(movie.visible.eq(true),
+                        movieTitleLike(condition.getTitle()),
+                        genreIdEq(condition.getGenreId()));
+
+        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
+    }
+
+    private Predicate movieTitleLike(String title) {
+        // where 에 null이 들어가면 조건문에서 무시한다
+        return title == null ? null : movie.title.contains(title);
+    }
+
+    private Predicate genreIdEq(Long genreId) {
+        return genreId == null ? null : genre.id.eq(genreId);
     }
 
     @Override

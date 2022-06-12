@@ -167,6 +167,25 @@ public class MovieService {
         return result;
     }
 
+    /**
+     * User단 - 영화 전체 검색 조회(숨김 처리 안된 영화 조회)
+     * @return List<MovieListDto> MovieListDto
+     */
+    public Page<MovieListDto> searchMovieListDto(Pageable pageable, MovieSearchCondition condition) {
+        // Page 처리 필요
+        Page<MovieListDto> result = movieRepository.searchMovieListDto(pageable, condition);
+        for (MovieListDto movieDto : result.getContent()) {
+            // 장르 이름 list 구하기
+            List<String> genreList = movieRepository.findGenreNameByMovieId(movieDto.getId());
+            movieDto.changeGenreList(genreList);
+
+            // 리뷰 Count 구하기
+            Long reviewCount = reviewRepository.countByMovieId(movieDto.getId());
+            movieDto.changeReviewCount(reviewCount);
+        }
+        return result;
+    }
+
     // 영화 정보 조회
     public Movie findMovie(Long movieId) {
         return movieRepository.findById(movieId).orElse(null);

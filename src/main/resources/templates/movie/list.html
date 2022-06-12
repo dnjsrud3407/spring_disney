@@ -5,17 +5,35 @@
     <body class="h-100">
     <!-- Navigation-->
     <div th:replace="~{fragment/navigation :: navigation-movie}"></div>
+    <script>
+        history.replaceState({}, null, location.pathname);
+
+        $(document).ready(function() {
+            $('.genreSelect').click(function() {
+                var genreId = $(this).attr('value');
+                $('input[name=genreId]').val(genreId);
+                $('form').submit();
+            });
+
+            $('.genreAllSelect').click(function() {
+                $('input[name=genreId]').val('');
+                $('form').submit();
+            });
+        });
+    </script>
     <main>
         <section>
-            <form th:action method="post">
+            <form name="form" th:action method="get">
                 <div class="section-div-movieList">
                     <div class="my3p">
                         <div class="text-start genreDiv">
-                            <span class="link mr1r">전체</span>
-                            <span th:each="genre : ${genreList}" th:text="${genre.genreName}" class="link mr1r"></span>
+                            <input type="hidden" th:field="${condition.genreId}">
+                            <span class="link mr1r genreAllSelect" th:classappend="${condition.genreId == null} ? 'linkClick'">전체</span>
+                            <span th:each="genre : ${genreList}" th:value="${genre.id}" th:text="${genre.genreName}"
+                                  class="link mr1r genreSelect" th:classappend="${condition.genreId == genre.id} ? 'linkClick'">장르이름</span>
                         </div>
                         <div class="floatL search-movieList">
-                            <input class="search-input" type="text" th:field="${title}" placeholder="영화제목 입력">
+                            <input class="search-input" type="text" name="title" th:value="${condition.title}" placeholder="영화제목 입력">
                             <img class="search-movieList-img" src="https://s3.ap-northeast-2.amazonaws.com/cdn.wecode.co.kr/icon/search.png">
                         </div>
                         <div style="clear: both;"></div>
@@ -36,18 +54,21 @@
                         </div>
                     </div>
                     <div style="clear: both;"></div>
-                    <div class="text-center">
-                        <span class="mr1r">
-                            <a th:href="@{/movie/list?page={page}&size={size} (page=${page.currNum-1}, size=${page.size})}"
+                    <div class="text-center"
+                         th:with="urlBuilder = ${T(org.springframework.web.servlet.support.ServletUriComponentsBuilder).fromCurrentRequest()},
+                                  genreId = ${condition.genreId}, size = ${page.size}">
+                        <span class="mr1r"
+                              th:with="num = ${page.currNum - 1}">
+                            <a th:href="${urlBuilder.replaceQueryParam('page', num).replaceQueryParam('size', size).toUriString()}"
                                th:class="${page.first} ? 'disabled link' : 'link'">&lt;</a>
                         </span>
                         <span th:each="num : ${#numbers.sequence(page.startNum, page.endNum)}" class="mr1r">
-                            <a th:href="@{/movie/list?page={num}&size={size} (num=${num}, size=${page.size})}"
+                            <a th:href="${urlBuilder.replaceQueryParam('page', num).replaceQueryParam('size', size).toUriString()}"
                                th:text="${num + 1}"
                                th:class="${num == page.currNum} ? 'fw-bold' : 'link'">1</a>
                         </span>
-                        <span>
-                            <a th:href="@{/movie/list?page={page}&size={size} (page=${page.currNum+1}, size=${page.size})}"
+                        <span th:with="num = ${page.currNum + 1}">
+                            <a th:href="${urlBuilder.replaceQueryParam('page', num).replaceQueryParam('size', size).toUriString()}"
                                th:class="${page.last} ? 'disabled link' : 'link'">&gt;</a>
                         </span>
                     </div>

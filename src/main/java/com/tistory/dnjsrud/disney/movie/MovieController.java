@@ -10,8 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -28,16 +27,34 @@ public class MovieController {
      * User 단 영화 조회하기
      */
     @GetMapping("/list")
-    public String movieList(Model model,
+    public String movieList(@ModelAttribute MovieSearchCondition condition, Model model,
                             @PageableDefault(page = 0, size = 5) Pageable pageable) {
-        Page<MovieListDto> result = movieService.findMovieListDto(pageable);
-        MyPage page = new MyPage(result);
-        log.info("page : {}" + page);
+        Page<MovieListDto> result;
+        if(condition.getTitle() != null || condition.getGenreId() != null) {     // 검색 조건 있을 경우
+            result = movieService.searchMovieListDto(pageable, condition);
+            log.info("genreId : ", condition.getGenreId());
+        } else {
+            result = movieService.findMovieListDto(pageable);
+        }
+
         List<Genre> genreList = genreService.findGenres();
         model.addAttribute("genreList", genreList);
+
+        model.addAttribute("condition", condition);
         model.addAttribute("movieList", result.getContent());
+
+        MyPage page = new MyPage(result);
         model.addAttribute("page", page);
 
         return "movie/list";
+    }
+
+    @GetMapping("/{movieId}")
+    @ResponseBody
+    public String movieDetail(@PathVariable Long movieId, Model model) {
+        MovieDetailDto movie = movieService.findMovieDetailDto(movieId);
+
+
+        return "movie/detail";
     }
 }

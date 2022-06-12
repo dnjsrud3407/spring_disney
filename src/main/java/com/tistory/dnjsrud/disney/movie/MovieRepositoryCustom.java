@@ -8,6 +8,7 @@ import java.util.Optional;
 
 public interface MovieRepositoryCustom {
     Page<MovieListDto> findMovieListDto(Pageable pageable);
+    Page<MovieListDto> searchMovieListDto(Pageable pageable, MovieSearchCondition condition);
     Optional<MovieDetailDto> findMovieDetailDtoByMovieId(Long movieId);
     List<String> findGenreNameByMovieId(Long movieId);
     List<MovieAdminListDto> findMovieAdminListDto();
