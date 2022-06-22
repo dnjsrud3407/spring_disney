@@ -3,6 +3,9 @@ package com.tistory.dnjsrud.disney.movie;
 import com.tistory.dnjsrud.disney.genre.Genre;
 import com.tistory.dnjsrud.disney.genre.GenreService;
 import com.tistory.dnjsrud.disney.global.MyPage;
+import com.tistory.dnjsrud.disney.review.ReviewCreateForm;
+import com.tistory.dnjsrud.disney.review.ReviewDetailDto;
+import com.tistory.dnjsrud.disney.review.ReviewService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -11,8 +14,11 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Controller
@@ -22,6 +28,7 @@ public class MovieController {
 
     private final MovieService movieService;
     private final GenreService genreService;
+    private final ReviewService reviewService;
 
     /**
      * User 단 영화 조회하기
@@ -37,6 +44,11 @@ public class MovieController {
             result = movieService.findMovieListDto(pageable);
         }
 
+        // 평점 소수점 둘째 자리까지 표기
+        for (MovieListDto movieListDto : result) {
+            movieListDto.setStar(Float.parseFloat(String.format("%.2f", movieListDto.getStar())));
+        }
+
         List<Genre> genreList = genreService.findGenres();
         model.addAttribute("genreList", genreList);
 
@@ -50,11 +62,36 @@ public class MovieController {
     }
 
     @GetMapping("/{movieId}")
-    @ResponseBody
-    public String movieDetail(@PathVariable Long movieId, Model model) {
+    public String movieDetail(@PathVariable Long movieId, HttpServletRequest request, Model model,
+                              @PageableDefault(page = 0, size = 5) Pageable pageable) {
         MovieDetailDto movie = movieService.findMovieDetailDto(movieId);
+        // 평점 소수점 둘째 자리까지 표기
+        movie.setStar(Float.parseFloat(String.format("%.2f", movie.getStar())));
+        
+        // 현재 유저가 작성한 리뷰
+        ReviewDetailDto myReview = reviewService.findReviewDetailDto(movieId, 66L);
+        if(myReview == null) {
+            Map<String, ?> flashMap = RequestContextUtils.getInputFlashMap(request);
 
+            if(flashMap!=null) {
+                ReviewCreateForm reviewCreateForm =(ReviewCreateForm)flashMap.get("reviewCreateForm");
+                model.addAttribute("reviewCreateForm", reviewCreateForm);
+            } else {
+                model.addAttribute("reviewCreateForm", new ReviewCreateForm());
+            }
+        } else {
+            model.addAttribute("myReview", myReview);
+        }
 
+        // 영화 리뷰 조회
+        Page<ReviewDetailDto> result = reviewService.findReviewDetailDtoList(pageable, movieId);
+
+        model.addAttribute("movie", movie);
+        model.addAttribute("reviewList", result.getContent());
+
+        MyPage page = new MyPage(result);
+        model.addAttribute("page", page);
+        model.addAttribute("totalCount", result.getTotalElements());
         return "movie/detail";
     }
 }

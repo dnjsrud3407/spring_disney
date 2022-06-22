@@ -1,9 +1,10 @@
 package com.tistory.dnjsrud.disney.review;
 
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.tistory.dnjsrud.disney.movie.QMovie;
-import com.tistory.dnjsrud.disney.poster.QPoster;
-import com.tistory.dnjsrud.disney.user.QUser;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -40,12 +41,33 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom{
     }
 
     @Override
-    public List<ReviewDetailDto> findReviewDetailDtoListByMovieId(Long movieId) {
-        return queryFactory
+    public Page<ReviewDetailDto> findReviewDetailDtoListByMovieId(Pageable pageable, Long movieId) {
+        List<ReviewDetailDto> content = queryFactory
                 .select(new QReviewDetailDto(review.id, review.star, review.content, user.nickname))
                 .from(movie)
                 .join(movie.reviews, review).on(movie.id.eq(movieId), movie.visible.eq(true))
                 .join(review.user, user)
+                .orderBy(review.id.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        JPAQuery<Long> countQuery = queryFactory
+                .select(review.count())
+                .from(movie)
+                .join(movie.reviews, review).on(movie.id.eq(movieId), movie.visible.eq(true))
+                .join(review.user, user);
+
+        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
+    }
+
+    @Override
+    public List<ReviewDetailDto> findReviewDetailDtoListByMovieIdNotUserId(Long movieId, Long userId) {
+        return queryFactory
+                .select(new QReviewDetailDto(review.id, review.star, review.content, user.nickname))
+                .from(movie)
+                .join(movie.reviews, review).on(movie.id.eq(movieId), movie.visible.eq(true))
+                .join(review.user, user).on(user.id.ne(userId))
                 .fetch();
     }
 
@@ -64,7 +86,7 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom{
     @Override
     public List<ReviewUserDto> findReviewUserDtoByUserId(Long userId) {
         return queryFactory
-                .select(new QReviewUserDto(movie.id, poster.fileFullPath, review.star, review.content))
+                .select(new QReviewUserDto(movie.id, poster.storedFileName, review.star, review.content))
                 .from(review)
                 .join(review.movie, movie).on(review.user.id.eq(userId), movie.visible.eq(true))
                 .join(movie.poster, poster)

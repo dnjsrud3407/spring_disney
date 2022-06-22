@@ -5,6 +5,8 @@ import com.tistory.dnjsrud.disney.user.User;
 import com.tistory.dnjsrud.disney.movie.MovieRepository;
 import com.tistory.dnjsrud.disney.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,14 +48,14 @@ public class ReviewService {
     public Long modifyReview(ReviewModifyForm form) {
         Review review = reviewRepository.findById(form.getReviewId()).orElse(null);
         if(review != null) {
-            review.changeStar(form.getStar());
             review.changeContent(form.getContent());
 
             // 영화 평점 수정
             Movie movie = movieRepository.findById(form.getMovieId()).orElse(null);
             int userCnt = Math.toIntExact(reviewRepository.countByMovieId(form.getMovieId()));
-            float avg = (((movie.getStar() * userCnt) - form.getOriginalStar()) + form.getStar()) / userCnt;
+            float avg = (((movie.getStar() * userCnt) - review.getStar()) + form.getStar()) / userCnt;
             movie.changeStar(avg);
+            review.changeStar(form.getStar());
 
             return review.getId();
         }
@@ -66,8 +68,13 @@ public class ReviewService {
     }
 
     // 해당 영화 리뷰 전체 조회
-    public List<ReviewDetailDto> findReviewDetailDtoList(Long movieId) {
-        return reviewRepository.findReviewDetailDtoListByMovieId(movieId);
+    public Page<ReviewDetailDto> findReviewDetailDtoList(Pageable pageable, Long movieId) {
+        return reviewRepository.findReviewDetailDtoListByMovieId(pageable, movieId);
+    }
+
+    // 해당 영화 리뷰 전체 조회(로그인 유저 제외)
+    public List<ReviewDetailDto> findReviewDetailDtoListWithoutUser(Long movieId, Long userId) {
+        return reviewRepository.findReviewDetailDtoListByMovieIdNotUserId(movieId, userId);
     }
 
     // 해당 영화 특정 유저 리뷰 조회
