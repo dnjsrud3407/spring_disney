@@ -10,7 +10,7 @@ public interface ReviewRepositoryCustom {
     Long countByUserId(Long userId);
     Long countByMovieId(Long movieId);
     Page<ReviewDetailDto> findReviewDetailDtoListByMovieId(Pageable pageable, Long movieId);
-    List<ReviewDetailDto> findReviewDetailDtoListByMovieIdNotUserId(Long movieId, Long userId);
+    Page<ReviewDetailDto> findReviewDetailDtoListByMovieIdNotUserId(Pageable pageable, Long movieId, Long userId);
     Optional<ReviewDetailDto> findReviewDetailDtoByMovieIdAndUserId(Long movieId, Long userId);
     List<ReviewUserDto> findReviewUserDtoByUserId(Long userId);
 }

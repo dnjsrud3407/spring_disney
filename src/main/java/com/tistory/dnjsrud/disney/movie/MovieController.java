@@ -68,30 +68,30 @@ public class MovieController {
         // 평점 소수점 둘째 자리까지 표기
         movie.setStar(Float.parseFloat(String.format("%.2f", movie.getStar())));
         
-        // 현재 유저가 작성한 리뷰
-        ReviewDetailDto myReview = reviewService.findReviewDetailDto(movieId, 66L);
-        if(myReview == null) {
-            Map<String, ?> flashMap = RequestContextUtils.getInputFlashMap(request);
-
-            if(flashMap!=null) {
-                ReviewCreateForm reviewCreateForm =(ReviewCreateForm)flashMap.get("reviewCreateForm");
-                model.addAttribute("reviewCreateForm", reviewCreateForm);
-            } else {
-                model.addAttribute("reviewCreateForm", new ReviewCreateForm());
-            }
-        } else {
-            model.addAttribute("myReview", myReview);
+        Long userId = 66L;
+        Map<String, ?> flashMap = RequestContextUtils.getInputFlashMap(request);
+        if(flashMap!=null) {
+            pageable = (Pageable) flashMap.get("pageable");
         }
 
         // 영화 리뷰 조회
-        Page<ReviewDetailDto> result = reviewService.findReviewDetailDtoList(pageable, movieId);
+        Page<ReviewDetailDto> result = reviewService.findReviewDetailDtoListWithoutUser(pageable, movieId, userId);
 
         model.addAttribute("movie", movie);
         model.addAttribute("reviewList", result.getContent());
 
         MyPage page = new MyPage(result);
         model.addAttribute("page", page);
-        model.addAttribute("totalCount", result.getTotalElements());
+
+        // 현재 유저가 작성한 리뷰
+        ReviewDetailDto myReview = reviewService.findReviewDetailDto(movieId, userId);
+        if(myReview != null) {
+            model.addAttribute("myReview", myReview);
+            model.addAttribute("totalCount", result.getTotalElements() + 1);
+        } else {
+            model.addAttribute("reviewCreateForm", new ReviewCreateForm());
+            model.addAttribute("totalCount", result.getTotalElements());
+        }
         return "movie/detail";
     }
 }

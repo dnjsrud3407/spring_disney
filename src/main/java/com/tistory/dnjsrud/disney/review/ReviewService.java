@@ -73,8 +73,8 @@ public class ReviewService {
     }
 
     // 해당 영화 리뷰 전체 조회(로그인 유저 제외)
-    public List<ReviewDetailDto> findReviewDetailDtoListWithoutUser(Long movieId, Long userId) {
-        return reviewRepository.findReviewDetailDtoListByMovieIdNotUserId(movieId, userId);
+    public Page<ReviewDetailDto> findReviewDetailDtoListWithoutUser(Pageable pageable, Long movieId, Long userId) {
+        return reviewRepository.findReviewDetailDtoListByMovieIdNotUserId(pageable, movieId, userId);
     }
 
     // 해당 영화 특정 유저 리뷰 조회

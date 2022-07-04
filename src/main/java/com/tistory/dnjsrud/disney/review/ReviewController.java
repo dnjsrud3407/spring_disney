@@ -28,14 +28,15 @@ public class ReviewController {
     public String createReview(@Validated @ModelAttribute ReviewCreateForm reviewCreateForm, BindingResult result,
                                @PathVariable Long movieId, Model model, RedirectAttributes redirectAttributes,
                                @PageableDefault(page = 0, size = 5) Pageable pageable) {
-        ReviewDetailDto reviewDetailDto = reviewService.findReviewDetailDto(movieId, 66L);
-        reviewCreateForm.setUserId(66L);
+        Long userId = 66L;
+        ReviewDetailDto reviewDetailDto = reviewService.findReviewDetailDto(movieId, userId);
+        reviewCreateForm.setUserId(userId);
         if(reviewDetailDto == null) {
             log.info("ReviewCreateForm : {}", reviewCreateForm);
             MovieDetailDto movie = movieService.findMovieDetailDto(movieId);
             movie.setStar(Float.parseFloat(String.format("%.2f", movie.getStar())));
 
-            Page<ReviewDetailDto> reviewList = reviewService.findReviewDetailDtoList(pageable, movieId);
+            Page<ReviewDetailDto> reviewList = reviewService.findReviewDetailDtoListWithoutUser(pageable, movieId, userId);
             MyPage page = new MyPage(reviewList);
 
             // ReviewCreateForm 중 Validation이 안 지켜졌을 경우
@@ -49,12 +50,7 @@ public class ReviewController {
             }
 
             Long reviewId = reviewService.createReview(reviewCreateForm);
-            ReviewDetailDto myReview = reviewService.findReviewDetailDto(movieId, 66L);
-            redirectAttributes.addFlashAttribute("myReview", myReview);
-            redirectAttributes.addFlashAttribute("movie", movie);
-            redirectAttributes.addFlashAttribute("reviewList", reviewList.getContent());
-            redirectAttributes.addFlashAttribute("page", page);
-            redirectAttributes.addFlashAttribute("totalCount", reviewList.getTotalElements());
+            redirectAttributes.addFlashAttribute("pageable", pageable);
 
             return "redirect:/movie/{movieId}";
         }
@@ -70,7 +66,8 @@ public class ReviewController {
         movie.setStar(Float.parseFloat(String.format("%.2f", movie.getStar())));
 
         // 현재 유저가 작성한 리뷰
-        ReviewDetailDto reviewDetailDto = reviewService.findReviewDetailDto(movieId, 66L);
+        Long userId = 66L;
+        ReviewDetailDto reviewDetailDto = reviewService.findReviewDetailDto(movieId, userId);
         ReviewModifyForm reviewModifyForm = new ReviewModifyForm();
         reviewModifyForm.setReviewId(reviewDetailDto.getId());
         reviewModifyForm.setStar(reviewDetailDto.getStar());
@@ -78,7 +75,7 @@ public class ReviewController {
         model.addAttribute("reviewModifyForm", reviewModifyForm);
 
         // 영화 리뷰 조회
-        Page<ReviewDetailDto> result = reviewService.findReviewDetailDtoList(pageable, movieId);
+        Page<ReviewDetailDto> result = reviewService.findReviewDetailDtoListWithoutUser(pageable, movieId, userId);
 
         model.addAttribute("movie", movie);
         model.addAttribute("reviewList", result.getContent());
@@ -93,15 +90,15 @@ public class ReviewController {
     public String modifyReview(@Validated @ModelAttribute ReviewModifyForm reviewModifyForm, BindingResult result,
                                @PathVariable Long movieId, Model model, RedirectAttributes redirectAttributes,
                                @PageableDefault(page = 0, size = 5) Pageable pageable) {
-        log.info("reviewModifyForm : {}", reviewModifyForm);
-        ReviewDetailDto reviewDetailDto = reviewService.findReviewDetailDto(movieId, 66L);
+        Long userId = 66L;
+        ReviewDetailDto reviewDetailDto = reviewService.findReviewDetailDto(movieId, userId);
         reviewModifyForm.setReviewId(reviewDetailDto.getId());
-        reviewModifyForm.setUserId(66L);
+        reviewModifyForm.setUserId(userId);
         if(reviewDetailDto != null) {
             MovieDetailDto movie = movieService.findMovieDetailDto(movieId);
             // 평점 소수점 둘째 자리까지 표기
             movie.setStar(Float.parseFloat(String.format("%.2f", movie.getStar())));
-            Page<ReviewDetailDto> reviewList = reviewService.findReviewDetailDtoList(pageable, movieId);
+            Page<ReviewDetailDto> reviewList = reviewService.findReviewDetailDtoListWithoutUser(pageable, movieId, userId);
             MyPage page = new MyPage(reviewList);
 
             if(result.hasErrors()) {
@@ -117,17 +114,24 @@ public class ReviewController {
             // 리뷰 수정
             reviewService.modifyReview(reviewModifyForm);
 
-            ReviewDetailDto myReview = reviewService.findReviewDetailDto(movieId, 66L);
-            redirectAttributes.addFlashAttribute("myReview", myReview);
-            redirectAttributes.addFlashAttribute("movie", movie);
-            redirectAttributes.addFlashAttribute("reviewList", reviewList.getContent());
-            redirectAttributes.addFlashAttribute("page", page);
-            redirectAttributes.addFlashAttribute("totalCount", reviewList.getTotalElements());
+            redirectAttributes.addFlashAttribute("pageable", pageable);
 
             return "redirect:/movie/{movieId}";
         }
         return "redirect:/movie/{movieId}";
     }
 
+    @PostMapping("/delete/{movieId}")
+    public String delete(@PathVariable Long movieId, RedirectAttributes redirectAttributes,
+                         @PageableDefault(page = 0, size = 5) Pageable pageable) {
+        Long userId = 66L;
+        ReviewDetailDto review = reviewService.findReviewDetailDto(movieId, userId);
+        if(review != null) {
+            reviewService.deleteReview(userId, movieId);
+        }
 
+        redirectAttributes.addFlashAttribute("pageable", pageable);
+
+        return "redirect:/movie/{movieId}";
+    }
 }

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <!-- Header -->
+    <div th:replace="~{fragment/header :: header}"></div>
+    <body class="h-100">
+    <!-- Navigation-->
+    <div th:replace="~{fragment/navigation :: navigation-movie}"></div>
+    <script>
+         const drawStar = (target) => {
+            document.querySelector(`.star span`).style.width = `${target.value * 10}%`;
+            document.querySelector('input[name="star"]').value = `${target.value}`;
+            document.querySelector('.displayStar').value = `${target.value}`;
+         }
+
+         function checkForm() {
+            if(document.querySelector('input[name="star"]').value == 0) {
+                alert('별점은 1점 이상이어야합니다');
+                return false;
+            }
+
+            if($("#content").val().trim().length < 1) {
+                alert('평가글을 작성해주세요.');
+                return false;
+            }
+
+            return true;
+         }
+
+         function changeForm(key, id) {
+            const myReviewForm = document.querySelector('#myReviewForm');
+
+            if(key == 'm') {
+                myReviewForm.action = "/review/modify/" + id;
+                myReviewForm.method = "get";
+                myReviewForm.submit();
+            } else if(key == 'd') {
+                var isDelete = confirm('삭제하겠습니까?');
+                if(isDelete == true) {
+                    myReviewForm.action = "/review/delete/" + id;
+                    myReviewForm.method = "post";
+                    myReviewForm.submit();
+                }
+            }
+         }
+    </script>
+    <main>
+        <section style="height: 285px;">
+            <div th:object="${movie}" class="mt3p ml14p">
+                <div class="floatL">
+                    <img th:src="|/poster/*{storedFileName}|" width="200"/>
+                </div>
+                <table class="movieDetailTable">
+                    <tr>
+                        <td style="width: 20%;">제목</td>
+                        <td><span th:text="*{title}"></span></td>
+                    </tr>
+                    <tr>
+                        <td>개봉일</td>
+                        <td><span th:text="${#calendars.format(movie.releaseDate, 'yyyy-MM-dd')}"></span></td>
+                    </tr>
+                    <tr>
+                        <td>별점</td>
+                        <td><i class="fa fa-star"></i><span th:text="*{star}"></span></td>
+                    </tr>
+                    <tr>
+                        <td>장르</td>
+                        <td>
+                            <span th:each="genreName : *{genreNameList}">
+                                <div class="badge bg-primary bg-gradient rounded-pill mb0p3r" th:text="${genreName}"></div>
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>내용</td>
+                        <td><span th:text="*{content}"></span></td>
+                    </tr>
+                </table>
+            </div>
+        </section>
+        <hr class="w90p my2p ml5p">
+        <section style="height: 500px;">
+            <div class="reviewDiv">
+                <div class="floatL inline-block" style="width: 40%;">
+                    <!-- 리뷰 쓰기 -->
+                    <div th:if="${myReview == null}">
+                        <form th:action="@{/review/create/{movieId} (movieId=${movie.id})}" th:object="${reviewCreateForm}" method="post"
+                              onsubmit="return checkForm()">
+                            <h3>리뷰 남기기</h3>
+                            <span class="star">
+                                ★★★★★
+                                <span>★★★★★</span>
+                                <input type="range" oninput="drawStar(this)" value="1" step="1" min="0" max="10">
+                            </span>
+                            <input class="displayStar" disabled />
+                            <input type="hidden" name="star" th:field="*{star}">
+                            <p class="text-start text-error" th:if="${#fields.hasErrors('star')}" th:errors="*{star}"></p><br>
+                            <textarea name="content" class="textarea-big" th:field="*{content}"></textarea>
+                            <p class="text-start text-error" th:if="${#fields.hasErrors('content')}" th:errors="*{content}"></p><br>
+                            <input type="hidden" name="page" th:value="${page.currNum}" />
+                            <input type="hidden" name="size" th:value="${page.size}" />
+                            <input type="submit" value="등록" class="submit-btn btn-middle">
+                        </form>
+                    </div>
+                    <!-- 내가 작성한 리뷰 -->
+                    <div th:if="${myReview != null}">
+                        <form method="post" id="myReviewForm">
+                            <h3 class="mb0p5r">나의 리뷰</h3>
+                            <span class="star">
+                                ★★★★★
+                                <span th:style="|width: ${myReview.star * 10}%|">★★★★★</span>
+                                <input type="range">
+                            </span>
+                            <input th:value="${#numbers.formatInteger(myReview.star, 1)}" class="displayStar" disabled />
+                            <div class="mb1r">
+                                <span th:text="${myReview.content}">너무 너무 너무 재밌었어요.</span>
+                                <br><span th:text="${myReview.nickname}" class="review-small-font">원경</span>
+                            </div>
+                            <input type="hidden" name="page" th:value="${page.currNum}" />
+                            <input type="hidden" name="size" th:value="${page.size}" />
+                            <input type="button" value="수정" class="submit-btn btn-mini" th:onclick="|changeForm('m', ${movie.id})|">
+                            <input type="button" value="삭제" class="submit-btn btn-mini" th:onclick="|changeForm('d', ${movie.id})|">
+                        </form>
+                    </div>
+                </div>
+                <!-- 영화 리뷰 list -->
+                <div class="inline-block" style="width: 40%;">
+                    <h4>리뷰(<span th:text="${totalCount}"></span>)</h4>
+                    <div th:each="review, i : ${reviewList}" style="width: 100%;" th:class="${i.count eq reviewList.size} ? 'mb2r inline-block' : 'inline-block'">
+                        <div class="floatL" style="width: 23%;">
+                            <span class="list-star">
+                                ★★★★★
+                                <span th:style="|width: ${review.star * 10}%|">★★★★★</span>
+                                <input type="range">
+                            </span>
+                            <br><span th:text="${#numbers.formatInteger(review.star, 1)}">5.0</span>
+                        </div>
+                        <div class="grid">
+                            <span th:text="${review.content}">너무 너무 너무 재밌었어요.</span>
+                            <span th:text="${review.nickname}" class="review-small-font">원경</span>
+                        </div>
+                        <div style="clear: both;"></div>
+                        <hr th:class="${i.count eq reviewList.size} ? 'none'">
+                    </div>
+
+                    <!-- 리뷰 페이징 -->
+                    <div class="text-center"
+                         th:with="urlBuilder = ${T(org.springframework.web.servlet.support.ServletUriComponentsBuilder).fromCurrentRequest()}, size = ${page.size}">
+                        <span class="mr1r" th:with="num = ${page.currNum - 1}">
+                            <a th:href="${urlBuilder.replaceQueryParam('page', num).replaceQueryParam('size', size).toUriString()}"
+                               th:class="${page.first} ? 'disabled link' : 'link'">&lt;</a>
+                        </span>
+                        <span th:each="num : ${#numbers.sequence(page.startNum, page.endNum)}" class="mr1r">
+                            <a th:href="${urlBuilder.replaceQueryParam('page', num).replaceQueryParam('size', size).toUriString()}"
+                               th:text="${num + 1}"
+                               th:class="${num == page.currNum} ? 'fw-bold' : 'link'">1</a>
+                        </span>
+                        <span class="mr1r" th:with="num = ${page.currNum + 1}">
+                            <a th:href="${urlBuilder.replaceQueryParam('page', num).replaceQueryParam('size', size).toUriString()}"
+                               th:class="${page.last} ? 'disabled link' : 'link'">&gt;</a>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <!-- Footer-->
+    <div th:replace="~{fragment/footer :: footer}"></div>
+    </body>
+</html>

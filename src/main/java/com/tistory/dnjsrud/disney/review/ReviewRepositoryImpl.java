@@ -62,13 +62,24 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom{
     }
 
     @Override
-    public List<ReviewDetailDto> findReviewDetailDtoListByMovieIdNotUserId(Long movieId, Long userId) {
-        return queryFactory
+    public Page<ReviewDetailDto> findReviewDetailDtoListByMovieIdNotUserId(Pageable pageable, Long movieId, Long userId) {
+        List<ReviewDetailDto> content = queryFactory
                 .select(new QReviewDetailDto(review.id, review.star, review.content, user.nickname))
                 .from(movie)
                 .join(movie.reviews, review).on(movie.id.eq(movieId), movie.visible.eq(true))
                 .join(review.user, user).on(user.id.ne(userId))
+                .orderBy(review.id.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
+
+        JPAQuery<Long> countQuery = queryFactory
+                .select(review.count())
+                .from(movie)
+                .join(movie.reviews, review).on(movie.id.eq(movieId), movie.visible.eq(true))
+                .join(review.user, user).on(user.id.ne(userId));
+
+        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
     }
 
     @Override
