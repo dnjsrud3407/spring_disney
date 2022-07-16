@@ -32,13 +32,12 @@ public class User {
     private String email;
 
     @NotNull
-    @Enumerated(EnumType.STRING)
-    private Role role;
+    private String role;
 
     @OneToMany(mappedBy = "user")
     private List<Review> reviews = new ArrayList<>();
 
-    private User(String loginId, String password, String nickname, String email, Role role) {
+    private User(String loginId, String password, String nickname, String email, String role) {
         this.loginId = loginId;
         this.password = password;
         this.nickname = nickname;
@@ -48,7 +47,7 @@ public class User {
 
     //== 생성 메서드 ==//
     public static User createUser(String loginId, String password, String nickname, String email) {
-        User user = new User(loginId, password, nickname, email, Role.USER);
+        User user = new User(loginId, password, nickname, email, Role.ROLE_USER.name());
         return user;
     }
 

@@ -2,21 +2,30 @@ package com.tistory.dnjsrud.disney.user;
 
 import com.tistory.dnjsrud.disney.review.ReviewRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class UserService {
+public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final ReviewRepository reviewRepository;
     private final MessageSource ms;
+
+    private final PasswordEncoder passwordEncoder;
 
     /**
      * 회원가입
@@ -25,10 +34,12 @@ public class UserService {
      */
     @Transactional
     public Long join(UserJoinForm form) {
-        // Validation 검증하는 부분은 강의 스프링 MVC 2편에 나와있다 - Controller 에서 작성
         // 회원 중복 체크
         validateDuplicateMember(form);
-        User user = User.createUser(form.getLoginId(), form.getPassword(), form.getNickname(), form.getEmail());
+
+        // Password 인코더 후 저장
+        String encodedPassword = passwordEncoder.encode(form.getPassword());
+        User user = User.createUser(form.getLoginId(), encodedPassword, form.getNickname(), form.getEmail());
         userRepository.save(user);
         return user.getId();
     }
@@ -113,4 +124,14 @@ public class UserService {
             user.changeNickname(nickname);
         }
     }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        SecurityUser user = userRepository.findSecurityUserByLoginId(username).orElse(null);
+        if(user == null) {
+            throw new InternalAuthenticationServiceException("사용자 정보가 없습니다.");
+        }
+        return user;
+    }
+
 }
