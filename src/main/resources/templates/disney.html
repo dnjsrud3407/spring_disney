@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <!-- Header -->
+    <div th:replace="~{fragment/header :: header}"></div>
+    <body class="h-100">
+    <!-- Navigation-->
+    <div th:replace="~{fragment/navigation :: navigation}"></div>
+        <main>
+            <header class="bg-dark">
+                <div class="header-div pb6p">
+                    <div class="w55p pt12p mr5p">
+                        <h1 class="display-5 text-white">A Bootstrap 5 template for modern businesses</h1>
+                    </div>
+                    <div class="w40p pt6p">
+                        <img class="img-fluid rounded-3" src="https://dummyimage.com/400x270/000/fff" alt="..." />
+                    </div>
+                </div>
+            </header>
+            <section>
+                <div class="section-div">
+                    <div class="fs1p25r text-muted pl0p2r mb1p5r ml1p5r">
+                        <p>평점 Best8</p>
+                    </div>
+                    <div>
+                        <div class="col-lg-arrow floatL">
+                            <img width="30px" th:src="@{/img/left_arrow.png}" />
+                        </div>
+                        <div class="col-lg-3 floatL mb6r">
+                            <div class="card shadow border-0">
+                                <img src="https://dummyimage.com/328x472/ced4da/6c757d" alt="..." />
+                                <div class="p1p5r">
+                                    <div class="badge bg-primary bg-gradient rounded-pill mb0p3r">SF</div><br>
+                                    <div class="mb0p2r fs0p9r"><i class="fa fa-star"></i><span>4.5</span></div>
+                                    <a class="fs1p2r" href="#!"><h5>듄</h5></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 floatL mb6r">
+                            <div class="card shadow border-0">
+                                <img src="https://dummyimage.com/328x472/ced4da/6c757d" alt="..." />
+                                <div class="p1p5r">
+                                    <div class="badge bg-primary bg-gradient rounded-pill mb0p3r">SF</div><br>
+                                    <div class="mb0p2r fs0p9r"><i class="fa fa-star"></i><span>4.5</span></div>
+                                    <a class="fs1p2r" href="#!"><h5>듄</h5></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 floatL mb6r">
+                            <div class="card shadow border-0">
+                                <img src="https://dummyimage.com/328x472/ced4da/6c757d" alt="..." />
+                                <div class="p1p5r">
+                                    <div class="badge bg-primary bg-gradient rounded-pill mb0p3r">SF</div><br>
+                                    <div class="mb0p2r fs0p9r"><i class="fa fa-star"></i><span>4.5</span></div>
+                                    <a class="fs1p2r" href="#!"><h5>듄</h5></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 floatL mb6r">
+                            <div class="card shadow border-0">
+                                <img src="https://dummyimage.com/328x472/ced4da/6c757d" alt="..." />
+                                <div class="p1p5r">
+                                    <div class="badge bg-primary bg-gradient rounded-pill mb0p3r">SF</div><br>
+                                    <div class="mb0p2r fs0p9r"><i class="fa fa-star"></i><span>4.5</span></div>
+                                    <a class="fs1p2r" href="#!"><h5>듄</h5></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-arrow floatL">
+                            <img width="30px" th:src="@{/img/right_arrow.png}" />
+                        </div>
+                        <div style="clear: both;"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        <!-- Footer-->
+        <div th:replace="~{fragment/footer :: footer}"></div>
+    </body>
+</html>
