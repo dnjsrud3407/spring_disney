@@ -1,4 +1,4 @@
-package com.tistory.dnjsrud.disney.config;
+package com.tistory.dnjsrud.disney.auth;
 
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
@@ -26,7 +26,7 @@ public class CustomFailureHandler extends SimpleUrlAuthenticationFailureHandler 
             exceptionMsg = "requestAdm";
         }
 
-        setDefaultFailureUrl("/user/login?exceptionMsg=" + exceptionMsg);
+        setDefaultFailureUrl("/user/loginForm?exceptionMsg=" + exceptionMsg);
         super.onAuthenticationFailure(request, response, exception);
     }
 }

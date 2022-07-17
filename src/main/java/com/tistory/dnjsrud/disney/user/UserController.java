@@ -15,9 +15,11 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.Map;
 
 @Slf4j
 @Controller
@@ -29,22 +31,28 @@ public class UserController {
     private final ReviewService reviewService;
     private final MessageSource ms;
 
-    @GetMapping("/login")
-    public String login(@RequestParam(required = false) String exceptionMsg, RedirectAttributes redirectAttributes,
-                        @RequestParam(required = false) String errorMsg, Model model) {
-        // 로그인 실패시 CustomFailureHandler -> 1 -> 2
+    @GetMapping("/loginForm")
+    public String login(@RequestParam(required = false) String exceptionMsg, RedirectAttributes redirectAttributes) {
+        // 로그인 실패시 CustomFailureHandler -> 1 -> 2. /loginErr 로 이동
         if(exceptionMsg != null) {
             // 1. CustomFailureHandler 에서 넘어 온 경우
             if(exceptionMsg.equals("invalid")) {
-                redirectAttributes.addAttribute("errorMsg", "invalid");
+                redirectAttributes.addFlashAttribute("errorMsg", "invalid");
             } else if(exceptionMsg.equals("requestAdm")) {
-                redirectAttributes.addAttribute("errorMsg", "requestAdm");
+                redirectAttributes.addFlashAttribute("errorMsg", "requestAdm");
             }
-            return "redirect:/user/login";
+            return "redirect:/user/loginErr";
         }
 
-        // 2. redirect:/user/login 로 넘어 온 경우
-        if(errorMsg != null) {
+        return "user/login";
+    }
+
+    @GetMapping("/loginErr")
+    public String loginErr(HttpServletRequest request, Model model) {
+        Map<String, ?> flashMap = RequestContextUtils.getInputFlashMap(request);
+        String errorMsg;
+        if(flashMap!=null) {
+            errorMsg = (String) flashMap.get("errorMsg");
             model.addAttribute("msg", ms.getMessage(errorMsg, null, null));
         }
 
@@ -86,7 +94,7 @@ public class UserController {
         if(result.hasErrors()) {
             return "user/join";
         }
-        return "redirect:/";
+        return "redirect:/user/loginForm";
     }
 
     @GetMapping("/myPage")

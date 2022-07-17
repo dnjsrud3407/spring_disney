@@ -1,4 +1,4 @@
-package com.tistory.dnjsrud.disney.config;
+package com.tistory.dnjsrud.disney.auth;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;

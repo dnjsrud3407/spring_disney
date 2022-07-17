@@ -131,6 +131,8 @@ public class UserService implements UserDetailsService {
         if(user == null) {
             throw new InternalAuthenticationServiceException("사용자 정보가 없습니다.");
         }
+
+        // return 하면 Session((Authentication)) 내부에 저장된다
         return user;
     }
 
