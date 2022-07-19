@@ -9,14 +9,21 @@
         history.replaceState({}, null, location.pathname);
 
         $(document).ready(function() {
+            // 장르 클릭
             $('.genreSelect').click(function() {
                 var genreId = $(this).attr('value');
                 $('input[name=genreId]').val(genreId);
                 $('form').submit();
             });
 
+            // 전체 장르 클릭
             $('.genreAllSelect').click(function() {
                 $('input[name=genreId]').val('');
+                $('form').submit();
+            });
+
+            // 검색 이미지 클릭
+            $('.movieListSearch').click(function() {
                 $('form').submit();
             });
         });
@@ -34,7 +41,7 @@
                         </div>
                         <div class="floatL search-movieList">
                             <input class="search-input" type="text" name="title" th:value="${condition.title}" placeholder="영화제목 입력">
-                            <img class="search-movieList-img" src="https://s3.ap-northeast-2.amazonaws.com/cdn.wecode.co.kr/icon/search.png">
+                            <img class="search-movieList-img movieListSearch" src="https://s3.ap-northeast-2.amazonaws.com/cdn.wecode.co.kr/icon/search.png">
                         </div>
                         <div style="clear: both;"></div>
                     </div>

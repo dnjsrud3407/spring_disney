@@ -34,7 +34,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
             .and() // 페이지 권한 설정
                 .authorizeRequests()
                     .antMatchers(urlPermitAll()).permitAll()
-                    .antMatchers("/user/myPage").hasAnyRole("USER", "ADMIN")
+                    .antMatchers("/user/myPage", "/review/**").hasAnyRole("USER", "ADMIN")
                     .antMatchers("/admin/**").hasRole("ADMIN")
                     .anyRequest().authenticated()
             .and()

@@ -3,6 +3,23 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
   <body>
     <nav th:fragment="navigation" class="bg-dark">
+      <script>
+        function movieSearchEnter() {
+          if(window.event.keyCode == 13) {
+            var title = $('input[name=title]').val();
+            if(title.length > 0) {
+              location.href = '/movie/list?genreId=&title=' + title;
+            } else {
+              alert('제목을 입력하세요');
+            }
+          }
+        }
+
+        function movieSearch() {
+          var title = $('input[name=title]').val();
+          location.href = '/movie/list?genreId=&title=' + title;
+        }
+      </script>
       <div class="nav-div">
         <div class="floatL">
           <a class="logo" th:href="@{/disney}" href="./index.html">Disney</a>
@@ -25,7 +42,7 @@
           </span>
         </div>
         <div class="floatR search">
-          <input class="search-input" type="text" placeholder="영화제목 입력">
+          <input class="search-input" name="title" type="text" placeholder="영화제목 입력" onkeyup="movieSearchEnter()">
           <img class="search-img" src="https://s3.ap-northeast-2.amazonaws.com/cdn.wecode.co.kr/icon/search.png" onclick="movieSearch()">
         </div>
       </div>
