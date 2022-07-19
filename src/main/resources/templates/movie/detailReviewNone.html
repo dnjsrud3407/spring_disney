@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     <!-- Header -->
     <div th:replace="~{fragment/header :: header}"></div>
     <body class="h-100">
@@ -24,23 +25,6 @@
             }
 
             return true;
-         }
-
-         function changeForm(key, id) {
-            const myReviewForm = document.querySelector('#myReviewForm');
-
-            if(key == 'm') {
-                myReviewForm.action = "/review/modify/" + id;
-                myReviewForm.method = "get";
-                myReviewForm.submit();
-            } else if(key == 'd') {
-                var isDelete = confirm('삭제하겠습니까?');
-                if(isDelete == true) {
-                    myReviewForm.action = "/review/delete/" + id;
-                    myReviewForm.method = "post";
-                    myReviewForm.submit();
-                }
-            }
          }
     </script>
     <main>
@@ -81,8 +65,23 @@
         <section style="height: 500px;">
             <div class="reviewDiv">
                 <div class="floatL inline-block" style="width: 40%;">
-                    <!-- 리뷰 쓰기 -->
-                    <div th:if="${myReview == null}">
+                    <!-- 로그인 안 했을 때 -->
+                    <div sec:authorize="isAnonymous()">
+                        <form>
+                            <h3>리뷰 남기기</h3>
+                            <span class="star">
+                                ★★★★★
+                                <span>★★★★★</span>
+                                <input type="range" value="1" step="1" min="0" max="10" readonly>
+                            </span>
+                            <div>
+                                <textarea name="content" class="textarea-big cursor-pointer" readonly th:onclick="|location.href='@{/user/loginForm}'|">로그인 시 이용가능합니다. 로그인 페이지 이동</textarea>
+                            </div>
+                            <input type="button" value="등록" class="submit-cancel btn-middle">
+                        </form>
+                    </div>
+                    <!-- 로그인 되었을 때 -->
+                    <div sec:authorize="isAuthenticated()">
                         <form th:action="@{/review/create/{movieId} (movieId=${movie.id})}" th:object="${reviewCreateForm}" method="post"
                               onsubmit="return checkForm()">
                             <h3>리뷰 남기기</h3>
@@ -99,26 +98,7 @@
                             <input type="hidden" name="page" th:value="${page.currNum}" />
                             <input type="hidden" name="size" th:value="${page.size}" />
                             <input type="submit" value="등록" class="submit-btn btn-middle">
-                        </form>
-                    </div>
-                    <!-- 내가 작성한 리뷰 -->
-                    <div th:if="${myReview != null}">
-                        <form method="post" id="myReviewForm">
-                            <h3 class="mb0p5r">나의 리뷰</h3>
-                            <span class="star">
-                                ★★★★★
-                                <span th:style="|width: ${myReview.star * 10}%|">★★★★★</span>
-                                <input type="range">
-                            </span>
-                            <input th:value="${#numbers.formatInteger(myReview.star, 1)}" class="displayStar" disabled />
-                            <div class="mb1r">
-                                <span th:text="${myReview.content}">너무 너무 너무 재밌었어요.</span>
-                                <br><span th:text="${myReview.nickname}" class="review-small-font">원경</span>
-                            </div>
-                            <input type="hidden" name="page" th:value="${page.currNum}" />
-                            <input type="hidden" name="size" th:value="${page.size}" />
-                            <input type="button" value="수정" class="submit-btn btn-mini" th:onclick="|changeForm('m', ${movie.id})|">
-                            <input type="button" value="삭제" class="submit-btn btn-mini" th:onclick="|changeForm('d', ${movie.id})|">
+                            <input type="hidden" name="_csrf" value="{{_csrf.token}}"/>
                         </form>
                     </div>
                 </div>
@@ -149,10 +129,10 @@
                             <a th:href="${urlBuilder.replaceQueryParam('page', num).replaceQueryParam('size', size).toUriString()}"
                                th:class="${page.first} ? 'disabled link' : 'link'">&lt;</a>
                         </span>
-                        <span th:each="num : ${#numbers.sequence(page.startNum, page.endNum)}" class="mr1r">
+                        <span th:each="num : ${#numbers.sequence(page.startNum, page.endNum)}">
                             <a th:href="${urlBuilder.replaceQueryParam('page', num).replaceQueryParam('size', size).toUriString()}"
-                               th:text="${num + 1}"
-                               th:class="${num == page.currNum} ? 'fw-bold' : 'link'">1</a>
+                               th:if="${num >= 0}" th:text="${num + 1}"
+                               th:class="${num == page.currNum} ? 'fw-bold mr1r' : 'link mr1r'">1</a>
                         </span>
                         <span class="mr1r" th:with="num = ${page.currNum + 1}">
                             <a th:href="${urlBuilder.replaceQueryParam('page', num).replaceQueryParam('size', size).toUriString()}"
