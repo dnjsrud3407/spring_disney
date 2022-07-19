@@ -3,11 +3,14 @@ package com.tistory.dnjsrud.disney.review;
 import com.tistory.dnjsrud.disney.global.MyPage;
 import com.tistory.dnjsrud.disney.movie.MovieDetailDto;
 import com.tistory.dnjsrud.disney.movie.MovieService;
+import com.tistory.dnjsrud.disney.user.SecurityUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -27,8 +30,9 @@ public class ReviewController {
     @PostMapping("/create/{movieId}")
     public String createReview(@Validated @ModelAttribute ReviewCreateForm reviewCreateForm, BindingResult result,
                                @PathVariable Long movieId, Model model, RedirectAttributes redirectAttributes,
-                               @PageableDefault(page = 0, size = 5) Pageable pageable) {
-        Long userId = 66L;
+                               @PageableDefault(page = 0, size = 5) Pageable pageable,
+                               @AuthenticationPrincipal SecurityUser securityUser) {
+        Long userId = securityUser.getId();
         ReviewDetailDto reviewDetailDto = reviewService.findReviewDetailDto(movieId, userId);
         reviewCreateForm.setUserId(userId);
         if(reviewDetailDto == null) {
@@ -60,13 +64,14 @@ public class ReviewController {
 
     @GetMapping("/modify/{movieId}")
     public String modifyReview(@PathVariable Long movieId, Model model,
-                               @PageableDefault(page = 0, size = 5) Pageable pageable) {
+                               @PageableDefault(page = 0, size = 5) Pageable pageable,
+                               @AuthenticationPrincipal SecurityUser securityUser) {
         MovieDetailDto movie = movieService.findMovieDetailDto(movieId);
         // 평점 소수점 둘째 자리까지 표기
         movie.setStar(Float.parseFloat(String.format("%.2f", movie.getStar())));
 
         // 현재 유저가 작성한 리뷰
-        Long userId = 66L;
+        Long userId = securityUser.getId();
         ReviewDetailDto reviewDetailDto = reviewService.findReviewDetailDto(movieId, userId);
         ReviewModifyForm reviewModifyForm = new ReviewModifyForm();
         reviewModifyForm.setReviewId(reviewDetailDto.getId());
@@ -89,8 +94,9 @@ public class ReviewController {
     @PostMapping("/modify/{movieId}")
     public String modifyReview(@Validated @ModelAttribute ReviewModifyForm reviewModifyForm, BindingResult result,
                                @PathVariable Long movieId, Model model, RedirectAttributes redirectAttributes,
-                               @PageableDefault(page = 0, size = 5) Pageable pageable) {
-        Long userId = 66L;
+                               @PageableDefault(page = 0, size = 5) Pageable pageable,
+                               @AuthenticationPrincipal SecurityUser securityUser) {
+        Long userId = securityUser.getId();
         ReviewDetailDto reviewDetailDto = reviewService.findReviewDetailDto(movieId, userId);
         reviewModifyForm.setReviewId(reviewDetailDto.getId());
         reviewModifyForm.setUserId(userId);
@@ -123,8 +129,9 @@ public class ReviewController {
 
     @PostMapping("/delete/{movieId}")
     public String delete(@PathVariable Long movieId, RedirectAttributes redirectAttributes,
-                         @PageableDefault(page = 0, size = 5) Pageable pageable) {
-        Long userId = 66L;
+                         @PageableDefault(page = 0, size = 5) Pageable pageable,
+                         @AuthenticationPrincipal SecurityUser securityUser) {
+        Long userId = securityUser.getId();
         ReviewDetailDto review = reviewService.findReviewDetailDto(movieId, userId);
         if(review != null) {
             reviewService.deleteReview(userId, movieId);

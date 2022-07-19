@@ -55,8 +55,7 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom{
         JPAQuery<Long> countQuery = queryFactory
                 .select(review.count())
                 .from(movie)
-                .join(movie.reviews, review).on(movie.id.eq(movieId), movie.visible.eq(true))
-                .join(review.user, user);
+                .join(movie.reviews, review).on(movie.id.eq(movieId), movie.visible.eq(true));
 
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
     }
@@ -95,13 +94,23 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom{
     }
 
     @Override
-    public List<ReviewUserDto> findReviewUserDtoByUserId(Long userId) {
-        return queryFactory
-                .select(new QReviewUserDto(movie.id, poster.storedFileName, review.star, review.content))
+    public Page<ReviewUserDto> findReviewUserDtoByUserId(Pageable pageable, Long userId) {
+        List<ReviewUserDto> content = queryFactory
+                .select(new QReviewUserDto(movie.id, movie.title, poster.storedFileName, review.star, review.content))
                 .from(review)
                 .join(review.movie, movie).on(review.user.id.eq(userId), movie.visible.eq(true))
                 .join(movie.poster, poster)
+                .orderBy(review.id.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
+
+        JPAQuery<Long> countQuery = queryFactory
+                .select(review.count())
+                .from(review)
+                .join(review.movie, movie).on(review.user.id.eq(userId), movie.visible.eq(true));
+
+        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
     }
 
 }

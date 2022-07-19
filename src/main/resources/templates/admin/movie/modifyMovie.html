@@ -30,10 +30,10 @@
                                 <textarea id="content" th:field="*{content}" class="text-field" placeholder="줄거리"
                                           th:class="${#fields.hasErrors('content')? 'text-field textarea fieldError' : 'text-field textarea'}"></textarea>
                                 <p class="text-start text-error" th:if="${#fields.hasErrors('content')}" th:errors="*{content}"></p>
-                            </div><br>
+                            </div><br><br>
                             <div class="joinDiv" style="width: 320px">
                                 <span class="text-start">장르 선택</span>
-                                <span th:each="genre : ${genres}">
+                                <span th:each="genre : ${genres}" class="fit floatL">
                                     <input type="checkbox" th:field="*{genreIds}" th:value="${genre.id}">
                                     <label th:for="${#ids.prev('genreIds')}" th:text="${genre.genreName}">장르</label>
                                 </span>
@@ -48,7 +48,7 @@
                                 </p>
                                 <p class="text-start text-error" th:if="${#fields.hasErrors('file')}" th:errors="*{file}"></p>
                              </div><br><br><br>
-                            <div style="width: 320px; margin: auto;">
+                            <div style="width: 320px; margin: auto; text-align: left;">
                                 <label for="visible" class="mr1r">활성화</label>
                                 <input type="checkbox" id="visible" th:field="*{visible}">
                             </div><br>

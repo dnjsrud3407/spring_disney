@@ -83,8 +83,8 @@ public class ReviewService {
     }
 
     // 해당 유저 리뷰 전체 조회
-    public List<ReviewUserDto> findReviewUserDto(Long userId) {
-        return reviewRepository.findReviewUserDtoByUserId(userId);
+    public Page<ReviewUserDto> findReviewUserDto(Pageable pageable, Long userId) {
+        return reviewRepository.findReviewUserDtoByUserId(pageable, userId);
     }
 
     // 리뷰 삭제
