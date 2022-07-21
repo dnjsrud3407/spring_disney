@@ -34,20 +34,23 @@ public class User {
     @NotNull
     private String role;
 
+    private String provider;
+
     @OneToMany(mappedBy = "user")
     private List<Review> reviews = new ArrayList<>();
 
-    private User(String loginId, String password, String nickname, String email, String role) {
+    private User(String loginId, String password, String nickname, String email, String role, String provider) {
         this.loginId = loginId;
         this.password = password;
         this.nickname = nickname;
         this.email = email;
         this.role = role;
+        this.provider = provider;
     }
 
     //== 생성 메서드 ==//
-    public static User createUser(String loginId, String password, String nickname, String email) {
-        User user = new User(loginId, password, nickname, email, Role.ROLE_USER.name());
+    public static User createUser(String loginId, String password, String nickname, String email, String provider) {
+        User user = new User(loginId, password, nickname, email, Role.ROLE_USER.name(), provider);
         return user;
     }
 

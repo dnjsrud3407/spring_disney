@@ -9,6 +9,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -21,6 +23,10 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     private final AuthenticationSuccessHandler customSuccessHandler;
     private final AuthenticationFailureHandler customFailureHandler;
     private final AccessDeniedHandler customAccessDeniedHandler;
+    private final AuthenticationEntryPoint customAuthenticationEntryPoint;
+
+    private final DefaultOAuth2UserService customOauth2UserService;
+
 
     @Override
     public void configure(WebSecurity web) throws Exception {
@@ -40,6 +46,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
                 .exceptionHandling() // 접근 권한이 없는 요청이 올 때
                     .accessDeniedHandler(customAccessDeniedHandler)
+                    .authenticationEntryPoint(customAuthenticationEntryPoint) // oauth2 로그인 시 이미 일반 회원가입으로 등록이 되어있는 경우
             .and() // 로그인 설정
                 .formLogin()
                     .loginPage("/user/loginForm")
@@ -52,7 +59,12 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .logout()
                 .logoutUrl("/user/logout")
                 .logoutSuccessUrl("/disney")
-                .invalidateHttpSession(true);
+                .invalidateHttpSession(true)
+            .and() // Google 로그인 설정
+                .oauth2Login()
+                    .loginPage("/user/loginForm") // Google 로그인이 완료 -> 엑세스 토큰, 사용자 프로필 정보를 얻어옴
+                    .userInfoEndpoint()
+                    .userService(customOauth2UserService);
     }
 
     private String[] urlPermitAll() {

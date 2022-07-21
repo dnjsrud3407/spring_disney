@@ -39,12 +39,12 @@ public class UserService implements UserDetailsService {
 
         // Password 인코더 후 저장
         String encodedPassword = passwordEncoder.encode(form.getPassword());
-        User user = User.createUser(form.getLoginId(), encodedPassword, form.getNickname(), form.getEmail());
+        User user = User.createUser(form.getLoginId(), encodedPassword, form.getNickname(), form.getEmail(), null);
         userRepository.save(user);
         return user.getId();
     }
 
-    private void validateDuplicateMember(UserJoinForm form) {
+    public boolean validateDuplicateMember(UserJoinForm form) {
         // 동시성 문제가 발생할 수 있다
         Optional<User> findUser = userRepository.findByLoginId(form.getLoginId());
         if (findUser.isPresent()) {
@@ -60,6 +60,7 @@ public class UserService implements UserDetailsService {
         if (findUser.isPresent()) {
             throw new IllegalStateException(ms.getMessage("user.emailDuplicate", null, null));
         }
+        return false;
     }
 
     // 회원 전체 조회

@@ -17,7 +17,7 @@
                                 로그인 실패
                             </div>
                             <input type="submit" value="로그인" class="submit-btn btn"><br>
-                            <a href="#" class="google btn">
+                            <a th:href="@{/oauth2/authorization/google}" class="google btn">
                                 <i class="fa fa-google fa-fw"></i> Login with Google+
                             </a><br>
                             <a th:href="@{/user/findId}">아이디 찾기</a> |

@@ -9,6 +9,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -99,8 +100,9 @@ public class UserController {
 
     @GetMapping("/myPage")
     public String myPage(Model model, HttpServletRequest request,
-                         @PageableDefault(page = 0, size = 5) Pageable pageable) {
-        Long userId = 66L;
+                         @PageableDefault(page = 0, size = 5) Pageable pageable,
+                         @AuthenticationPrincipal SecurityUser securityUser) {
+        Long userId = securityUser.getId();
         UserInfoDto userInfoDto = userService.findUserInfoDto(userId);
         model.addAttribute("userInfoDto", userInfoDto);
 
@@ -117,8 +119,9 @@ public class UserController {
 
     @GetMapping("/reviewList")
     public String reviewList(@PageableDefault(page = 0, size = 5) Pageable pageable,
-                             RedirectAttributes redirectAttributes) {
-        Long userId = 66L;
+                             RedirectAttributes redirectAttributes,
+                             @AuthenticationPrincipal SecurityUser securityUser) {
+        Long userId = securityUser.getId();
         Page<ReviewUserDto> result = reviewService.findReviewUserDto(pageable, userId);
 
         redirectAttributes.addFlashAttribute("reviewList", result.getContent());
