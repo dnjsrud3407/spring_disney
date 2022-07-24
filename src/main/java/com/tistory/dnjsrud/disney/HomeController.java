@@ -20,8 +20,8 @@ public class HomeController {
     }
 
     @GetMapping("/error/denied")
-    public String errDenied(HttpServletRequest request, Model model) {
-        model.addAttribute("msg", request.getAttribute("msg"));
+    public String errDenied(Model model) {
+        model.addAttribute("msg", "잘못된 접근입니다.");
         return "err/denied";
     }
 }

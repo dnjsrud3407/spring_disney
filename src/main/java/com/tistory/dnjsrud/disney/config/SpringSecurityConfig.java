@@ -27,7 +27,6 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final DefaultOAuth2UserService customOauth2UserService;
 
-
     @Override
     public void configure(WebSecurity web) throws Exception {
         web.ignoring().antMatchers("/", "/resources/**", "/css/**", "/js/**", "/img/**", "/poster/**");
@@ -40,13 +39,12 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
             .and() // 페이지 권한 설정
                 .authorizeRequests()
                     .antMatchers(urlPermitAll()).permitAll()
-                    .antMatchers("/user/myPage", "/review/**").hasAnyRole("USER", "ADMIN")
                     .antMatchers("/admin/**").hasRole("ADMIN")
                     .anyRequest().authenticated()
             .and()
-                .exceptionHandling() // 접근 권한이 없는 요청이 올 때
-                    .accessDeniedHandler(customAccessDeniedHandler)
-                    .authenticationEntryPoint(customAuthenticationEntryPoint) // oauth2 로그인 시 이미 일반 회원가입으로 등록이 되어있는 경우
+                .exceptionHandling()
+                    .accessDeniedHandler(customAccessDeniedHandler) // 접근 권한이 없는 요청이 올 때
+                    .authenticationEntryPoint(customAuthenticationEntryPoint) // 로그인하지 않고 접근하려는 경우
             .and() // 로그인 설정
                 .formLogin()
                     .loginPage("/user/loginForm")
@@ -64,12 +62,14 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .oauth2Login()
                     .loginPage("/user/loginForm") // Google 로그인이 완료 -> 엑세스 토큰, 사용자 프로필 정보를 얻어옴
                     .userInfoEndpoint()
-                    .userService(customOauth2UserService);
+                        .userService(customOauth2UserService)
+                    .and()
+                    .failureHandler(customFailureHandler);
     }
 
     private String[] urlPermitAll() {
         String[] urls = new String[] {
-                "/", "/disney", "/user/loginForm", "/user/login", "/user/join", "/user/loginErr",
+                "/", "/disney", "/user/loginForm", "/user/loginErr", "/user/login", "/user/join", "/user/loginErr",
                 "/movie/**"
         };
         return urls;

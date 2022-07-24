@@ -1,5 +1,6 @@
 package com.tistory.dnjsrud.disney.auth;
 
+import com.tistory.dnjsrud.disney.exception.OAuth2AuthenticationProcessingException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
@@ -22,7 +23,12 @@ public class CustomFailureHandler extends SimpleUrlAuthenticationFailureHandler 
         if (exception instanceof BadCredentialsException
                 || exception instanceof InternalAuthenticationServiceException) {
             exceptionMsg = "invalid";
-        } else {
+        }
+        // Oauth 로그인시 해당 이메일이 일반 회원가입으로 DB에 email이 저장되어 있는 경우
+        else if(exception instanceof OAuth2AuthenticationProcessingException) {
+            exceptionMsg = "oauth2Duplicate";
+        }
+        else {
             exceptionMsg = "requestAdm";
         }
 
