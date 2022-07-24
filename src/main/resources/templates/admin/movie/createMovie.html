@@ -10,7 +10,7 @@
             <div class="my8r">
                 <div class="text-center">
                     <h2 class="fw-bold">영화 등록</h2>
-                    <div>
+                    <div class="createMovieDiv">
                         <form th:action th:object="${movieCreateForm}" method="post" enctype="multipart/form-data">
                             <div class="joinDiv">
                                 <label for="title" class="text-start">영화 제목</label>
@@ -26,7 +26,7 @@
                             </div><br>
                             <div class="joinDiv">
                                 <label for="content" class="text-start">줄거리</label>
-                                <textarea id="content" th:field="*{content}" class="text-field" placeholder="줄거리"
+                                <textarea id="content" th:field="*{content}" class="text-field" placeholder="줄거리" rows="15"
                                           th:class="${#fields.hasErrors('content')? 'text-field textarea fieldError' : 'text-field textarea'}"></textarea>
                                 <p class="text-start text-error" th:if="${#fields.hasErrors('content')}" th:errors="*{content}"></p>
                             </div><br><br>
@@ -43,7 +43,7 @@
                                 <input type="file" th:field="*{file}">
                                 <p class="text-start text-error" th:if="${#fields.hasErrors('file')}" th:errors="*{file}"></p>
                              </div><br><br><br>
-                            <div style="width: 320px; margin: auto; text-align: left;">
+                            <div>
                                 <label for="visible" class="mr1r">활성화</label>
                                 <input type="checkbox" id="visible" th:field="*{visible}">
                             </div><br>
