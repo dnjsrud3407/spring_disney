@@ -43,7 +43,7 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
         // 일반 회원가입으로 DB에 email이 저장되어 있는 경우
         User emailDuplicated = userRepository.findByEmail(form.getEmail()).orElse(null);
         if(emailDuplicated != null) {
-            throw new OAuth2AuthenticationProcessingException("oauth2Duplicate");
+            throw new OAuth2AuthenticationProcessingException("oauth2Duplicate");   // extends AuthenticationException
         }
 
         // 구글 로그인 중복 확인
