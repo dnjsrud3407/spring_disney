@@ -1,5 +1,6 @@
 package com.tistory.dnjsrud.disney.genre;
 
+import com.tistory.dnjsrud.disney.validate.ValidationGroups;
 import lombok.*;
 
 import javax.validation.constraints.NotBlank;
@@ -10,6 +11,6 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 public class GenreCreateForm {
 
-    @NotBlank(message = "장르는 필수입니다.")
+    @NotBlank(message = "장르는 필수입니다.", groups = ValidationGroups.NotBlankGroup.class)
     private String genreName;
 }

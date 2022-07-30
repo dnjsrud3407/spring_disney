@@ -1,5 +1,6 @@
 package com.tistory.dnjsrud.disney.movie;
 
+import com.tistory.dnjsrud.disney.validate.ValidationGroups;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,20 +17,19 @@ import java.util.Date;
 @NoArgsConstructor
 public class MovieCreateForm {
 
-    @NotBlank(message = "제목은 필수입니다.")
+    @NotBlank(message = "제목은 필수입니다.", groups = ValidationGroups.NotBlankGroup.class)
     private String title;
 
-    @NotNull(message = "개봉일은 필수입니다.")
+    @NotNull(message = "개봉일은 필수입니다.", groups = ValidationGroups.NotBlankGroup.class)
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date releaseDate;
 
-    @NotBlank(message = "줄거리는 필수입니다.")
+    @NotBlank(message = "줄거리는 필수입니다.", groups = ValidationGroups.NotBlankGroup.class)
     private String content;
 
-    @NotEmpty(message = "장르는 필수입니다.")
+    @NotEmpty(message = "장르는 필수입니다.", groups = ValidationGroups.NotBlankGroup.class)
     private ArrayList<Long> genreIds;
 
-    @NotNull(message = "포스터는 필수입니다.")
     private MultipartFile file;
 
     private boolean visible;

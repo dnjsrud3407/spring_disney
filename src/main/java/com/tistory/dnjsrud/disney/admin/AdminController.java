@@ -5,6 +5,7 @@ import com.tistory.dnjsrud.disney.genre.GenreCreateForm;
 import com.tistory.dnjsrud.disney.genre.GenreModifyForm;
 import com.tistory.dnjsrud.disney.genre.GenreService;
 import com.tistory.dnjsrud.disney.movie.*;
+import com.tistory.dnjsrud.disney.validate.ValidationSequence;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
@@ -12,9 +13,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
 
@@ -39,7 +40,7 @@ public class AdminController {
     }
 
     @PostMapping("/movie/create")
-    public String createMovie(@Valid MovieCreateForm movieCreateForm, BindingResult result, Model model) throws IOException {
+    public String createMovie(@Validated(ValidationSequence.class) MovieCreateForm movieCreateForm, BindingResult result, Model model) throws IOException {
         log.info("movieCreateForm : {}", movieCreateForm);
 
         // =========================================================
@@ -112,7 +113,7 @@ public class AdminController {
     }
 
     @PostMapping("/movie/modify/{id}")
-    public String modifyMoviePost(@Valid MovieModifyForm movieModifyForm, BindingResult result, Model model) {
+    public String modifyMoviePost(@Validated(ValidationSequence.class) MovieModifyForm movieModifyForm, BindingResult result, Model model) {
         log.info("form : {}", movieModifyForm);
 
         // 1. movieModifyForm 중 Validation이 안 지켜졌을 경우
@@ -128,10 +129,10 @@ public class AdminController {
             return "admin/movie/modifyMovie";
         }
 
-        // 중복검사 실패할 경우
         try {
             movieService.modifyMovie(movieModifyForm);
         } catch (IllegalStateException e) {
+            // 중복검사 실패할 경우
             String titleDuplicate = ms.getMessage("movie.titleDuplicate", null, null);
             if(e.getMessage().equals(titleDuplicate)) {
                 result.addError(new FieldError("movieModifyForm", "title", titleDuplicate));
@@ -157,7 +158,7 @@ public class AdminController {
     }
 
     @PostMapping("/genre/create")
-    public String createGenrePost(@Valid GenreCreateForm genreCreateForm, BindingResult result) {
+    public String createGenrePost(@Validated(ValidationSequence.class) GenreCreateForm genreCreateForm, BindingResult result) {
         // 1. genreCreateForm 중 Validation이 안 지켜졌을 경우
         if(result.hasErrors()) {
             return "admin/genre/createGenre";
@@ -202,7 +203,7 @@ public class AdminController {
     }
 
     @PostMapping("/genre/modify/{id}")
-    public String modifyGenrePost(@Valid GenreModifyForm genreModifyForm, BindingResult result) {
+    public String modifyGenrePost(@Validated(ValidationSequence.class) GenreModifyForm genreModifyForm, BindingResult result) {
         // form Validation이 안 지켜졌을 경우
         if(result.hasErrors()) {
             return "admin/genre/modifyGenre";
