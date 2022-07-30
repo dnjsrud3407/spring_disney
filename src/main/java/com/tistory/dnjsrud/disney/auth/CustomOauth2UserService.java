@@ -41,7 +41,7 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
         UserJoinForm form = new UserJoinForm(loginId, password, nickname, email);
 
         // 일반 회원가입으로 DB에 email이 저장되어 있는 경우
-        User emailDuplicated = userRepository.findByEmail(form.getEmail()).orElse(null);
+        User emailDuplicated = userRepository.findByEmailAndProviderIsNull(form.getEmail()).orElse(null);
         if(emailDuplicated != null) {
             throw new OAuth2AuthenticationProcessingException("oauth2Duplicate");   // extends AuthenticationException
         }
