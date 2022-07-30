@@ -4,4 +4,6 @@ import java.util.Optional;
 
 public interface UserRepositoryCustom {
     Optional<SecurityUser> findSecurityUserByLoginId(String loginId);
+
+    Optional<ModifyNicknameForm> findNicknameById(Long userId);
 }

@@ -15,7 +15,7 @@
                                 <label for="loginId" class="text-start">아이디</label>
                                 <input type="text" id="loginId" th:field="*{loginId}" class="text-field" placeholder="아이디"
                                        th:class="${#fields.hasErrors('loginId')? 'text-field fieldError' : 'text-field'}">
-                                <p class="text-start  text-error" th:each="error, stat : ${#fields.errors('loginId')}" th:text="${error}" th:if="${stat.last}"></p>
+                                <p class="text-start text-error" th:each="error, stat : ${#fields.errors('loginId')}" th:text="${error}" th:if="${stat.last}"></p>
                             </div><br>
                             <div class="joinDiv">
                                 <label for="password" class="text-start">비밀번호</label>
@@ -27,7 +27,7 @@
                                 <label for="passwordConfirm" class="text-start">비밀번호 확인</label>
                                 <input type="password" id="passwordConfirm" th:field="*{passwordConfirm}" class="text-field" placeholder="비밀번호 확인"
                                        th:class="${#fields.hasErrors('passwordConfirm')? 'text-field fieldError' : 'text-field'}">
-                                <p class="text-start text-error" th:if="${#fields.hasErrors('passwordConfirm')}" th:errors="*{passwordConfirm}"></p>
+                                <p class="text-start text-error" th:each="error, stat : ${#fields.errors('passwordConfirm')}" th:text="${error}" th:if="${stat.last}"></p>
                             </div><br>
                             <div class="joinDiv">
                                 <label for="nickname" class="text-start">닉네임</label>

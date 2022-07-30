@@ -74,6 +74,15 @@ public class UserService implements UserDetailsService {
     }
 
     /**
+     * 회원 닉네임 찾기
+     * @param userId
+     * @return
+     */
+    public ModifyNicknameForm findNickname(Long userId){
+        return userRepository.findNicknameById(userId).orElse(null);
+    }
+
+    /**
      * UserInfoDto 조회
      * @param userId
      * @return UserInfoDto (nickname, email, reviewCount)
@@ -104,25 +113,26 @@ public class UserService implements UserDetailsService {
     @Transactional
     public void changePassword(Long userId, String password) {
         User user = userRepository.findById(userId).orElse(null);
+        String encodedPassword = passwordEncoder.encode(password);
         if (user != null) {
-            user.changePassword(password);
+            user.changePassword(encodedPassword);
         }
     }
 
     /**
      * 회원 닉네임 변경
      * @param userId
-     * @param nickname
+     * @param modifyNicknameForm
      */
     @Transactional
-    public void changeNickname(Long userId, String nickname) {
+    public void modifyNickname(Long userId, ModifyNicknameForm modifyNicknameForm) {
         User user = userRepository.findById(userId).orElse(null);
         if (user != null) {
-            Optional<User> findUser = userRepository.findByNickname(nickname);
+            Optional<User> findUser = userRepository.findByNickname(modifyNicknameForm.getNickname());
             if(findUser.isPresent()) {
-                throw new IllegalStateException("이미 존재하는 닉네임입니다.");
+                throw new IllegalStateException(ms.getMessage("user.nicknameDuplicate", null, null));
             }
-            user.changeNickname(nickname);
+            user.changeNickname(modifyNicknameForm.getNickname());
         }
     }
 
@@ -137,4 +147,14 @@ public class UserService implements UserDetailsService {
         return user;
     }
 
+    /**
+     * 비밀번호 변경 시 비밀번호 확인
+     * @param confirmPassword   회원 id
+     * @param userPassword      DB에 저장된 pw
+     */
+    public void confirmPassword(String confirmPassword, String userPassword) {
+        if(!passwordEncoder.matches(confirmPassword, userPassword)) {
+            throw new IllegalArgumentException(ms.getMessage("user.confirmPassword", null, null));
+        }
+    }
 }

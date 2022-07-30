@@ -24,4 +24,15 @@ public class UserRepositoryImpl implements UserRepositoryCustom{
                 .fetchOne()
         );
     }
+
+    @Override
+    public Optional<ModifyNicknameForm> findNicknameById(Long userId) {
+        return Optional.ofNullable(
+                queryFactory
+                .select(new QModifyNicknameForm(user.nickname))
+                .from(user)
+                .where(user.id.eq(userId))
+                .fetchOne()
+        );
+    }
 }
