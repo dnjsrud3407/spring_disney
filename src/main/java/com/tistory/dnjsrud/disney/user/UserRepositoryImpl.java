@@ -20,7 +20,7 @@ public class UserRepositoryImpl implements UserRepositoryCustom{
                 queryFactory
                 .select(new QSecurityUser(user.id, user.loginId, user.password, user.role))
                 .from(user)
-                .where(user.loginId.eq(loginId))
+                .where(user.loginId.eq(loginId), user.isEnabled.eq(true))
                 .fetchOne()
         );
     }

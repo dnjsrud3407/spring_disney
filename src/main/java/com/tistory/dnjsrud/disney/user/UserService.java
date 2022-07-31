@@ -157,4 +157,16 @@ public class UserService implements UserDetailsService {
             throw new IllegalArgumentException(ms.getMessage("user.confirmPassword", null, null));
         }
     }
+
+    /**
+     * 회원 비활성화 처리
+     * @param userId
+     */
+    @Transactional
+    public void disableUser(Long userId) {
+        User user = userRepository.findById(userId).orElse(null);
+        if(user != null) {
+            user.changeEnabled(false);
+        }
+    }
 }

@@ -36,6 +36,8 @@ public class User {
 
     private String provider;
 
+    public boolean isEnabled;
+
     @OneToMany(mappedBy = "user")
     private List<Review> reviews = new ArrayList<>();
 
@@ -46,6 +48,7 @@ public class User {
         this.email = email;
         this.role = role;
         this.provider = provider;
+        this.isEnabled = true;
     }
 
     //== 생성 메서드 ==//
@@ -61,6 +64,14 @@ public class User {
 
     public void changeNickname(String nickname) {
         this.nickname = nickname;
+    }
+
+    /**
+     * 회원 탈퇴
+     * @param isEnabled
+     */
+    public void changeEnabled(boolean isEnabled) {
+        this.isEnabled = isEnabled;
     }
 
 }

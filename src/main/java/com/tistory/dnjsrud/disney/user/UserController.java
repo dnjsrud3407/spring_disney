@@ -1,6 +1,7 @@
 package com.tistory.dnjsrud.disney.user;
 
 import com.tistory.dnjsrud.disney.global.MyPage;
+import com.tistory.dnjsrud.disney.review.ReviewRepository;
 import com.tistory.dnjsrud.disney.review.ReviewService;
 import com.tistory.dnjsrud.disney.review.ReviewUserDto;
 import com.tistory.dnjsrud.disney.validate.ValidationSequence;
@@ -31,6 +32,7 @@ public class UserController {
 
     private final UserService userService;
     private final ReviewService reviewService;
+    private final ReviewRepository reviewRepository;
     private final MessageSource ms;
 
     @GetMapping("/loginForm")
@@ -216,7 +218,7 @@ public class UserController {
             result.addError(new FieldError("modifyPasswordForm", "passwordConfirm", confirmPassword));
         }
 
-        // 1. modifyPasswordForm 중 Validation이 안 지켜졌을 경우
+        // modifyPasswordForm 중 Validation이 안 지켜졌을 경우
         if(result.hasErrors()) {
             return "user/modifyPassword";
         }
@@ -226,4 +228,50 @@ public class UserController {
 
         return "redirect:/user/myPage";
     }
+
+    // 회원탈퇴
+    @GetMapping("/delete")
+    public String deleteUser(@AuthenticationPrincipal SecurityUser securityUser, Model model) {
+        // 회원이 남긴 리뷰 수
+        Long userId = securityUser.getId();
+        Long reviewCount = reviewRepository.countByUserId(userId);
+        model.addAttribute("reviewCount", reviewCount);
+        model.addAttribute("deleteUserPasswordConfirmForm", new DeleteUserPasswordConfirmForm());
+
+        return "user/deleteUserPasswordConfirm";
+    }
+
+    @PostMapping("/delete")
+    public String deleteUser(@Validated(ValidationSequence.class) DeleteUserPasswordConfirmForm deleteUserPasswordConfirmForm,
+                             BindingResult result,
+                             @AuthenticationPrincipal SecurityUser securityUser, HttpServletRequest request) {
+        // 동의에 체크하지 않은 경우
+        if(!deleteUserPasswordConfirmForm.isConfirmDelete()) {
+            String confirmDelete = ms.getMessage("user.confirmDelete", null, null);
+            result.addError(new FieldError("deleteUserPasswordConfirmForm", "confirmDelete", confirmDelete));
+        }
+
+        // deleteUserPasswordConfirmForm 중 Validation이 안 지켜졌을 경우
+        if(result.hasErrors()) {
+            return "user/deleteUserPasswordConfirm";
+        }
+
+        // 현재 비밀번호와 일치하는지 확인
+        try {
+            String userPassword = securityUser.getPassword();
+            userService.confirmPassword(deleteUserPasswordConfirmForm.getPassword(), userPassword);
+        } catch (IllegalArgumentException e) {
+            result.addError(new FieldError("deleteUserPasswordConfirmForm", "password", e.getMessage()));
+            return "user/deleteUserPasswordConfirm";
+        }
+
+        // 비밀번호 일치한다면 비활성화 처리
+        userService.disableUser(securityUser.getId());
+
+        // 로그아웃 처리
+        request.getSession().invalidate();
+
+        return "redirect:/disney";
+    }
+
 }
