@@ -1,61 +1,75 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
     <!-- Header -->
-    <div th:replace="~{fragment/header :: header-index}"></div>
-    <body class="d-flex flex-column h-100">
-    <main class="flex-shrink-0">
-        <!-- Navigation-->
-        <div th:replace="~{fragment/navigation :: navigation}"></div>
-        <!-- Blog preview section-->
-        <section class="py-5">
-            <div class="container px-3 my-4">
-                <div class="row gx-5 justify-content-left">
-                    <div class="col-lg-8 col-xl-6">
-                        <p class="lead fw-normal text-muted mb-4">평점 Best 8</p>
-                    </div>
-                </div>
-                <div class="row gx-4">
-                    <div class="col-lg-3 mb-5">
-                        <div class="card shadow border-0">
-                            <img class="card-img-top" src="https://dummyimage.com/328x472/ced4da/6c757d" alt="..." />
-                            <div class="card-body p-4">
-                                <div class="badge bg-primary bg-gradient rounded-pill mb-2">SF</div><br>
-                                <div class="mb-2"><i class="fa fa-star"></i><span>4.5</span></div>
-                                <a class="text-decoration-none link-dark stretched-link" href="#!"><h5 class="card-title mb-2">듄</h5></a>
+    <div th:replace="~{fragment/header :: header}"></div>
+    <body class="h-100">
+    <!-- Navigation-->
+    <div th:replace="~{fragment/navigation :: navigation}"></div>
+    <main>
+        <!-- Header-->
+        <section class="py7r">
+            <div class="px3r">
+                <form th:action th:object="${userInfoDto}" method="post">
+                    <div class="ml14p">
+                        <div class="col-4 floatL">
+                            <p class="lead fw-bold text-muted mt-revert" th:text="*{nickname}">딸기가 좋아님</p>
+                        </div>
+                        <div class="col-6 content">
+                            <div class="mb0p8r">
+                                <label for="email">이메일</label> :
+                                <span class="lead fw-normal text-muted" id="email" th:text="*{email}"></span>
                             </div>
+                            <p class="mt-0p3r">
+                                <input type="button" value="닉네임 변경" class="submit-btn btn-mini-auto" th:onclick="|location.href='@{/user/modifyNickname}'|">
+                                <input type="button" value="비밀번호 변경" class="submit-btn btn-mini-auto" th:onclick="|location.href='@{/user/modifyPasswordConfirm}'|">
+                                <input type="button" value="회원 탈퇴" class="submit-btn btn-mini-auto" th:onclick="|location.href='@{/user/delete}'|">
+                            </p>
                         </div>
                     </div>
-                    <div class="col-lg-3 mb-5">
-                        <div class="card shadow border-0">
-                            <img class="card-img-top" src="https://dummyimage.com/328x472/ced4da/6c757d" alt="..." />
-                            <div class="card-body p-4">
-                                <div class="badge bg-primary bg-gradient rounded-pill mb-2">SF</div><br>
-                                <div class="mb-2"><i class="fa fa-star"></i><span>4.5</span></div>
-                                <a class="text-decoration-none link-dark stretched-link" href="#!"><h5 class="card-title mb-2">듄</h5></a>
+                    <hr class="my3r">
+                    <div class="row text-center" style="margin-bottom: 15rem;">
+                        <div class="text-center">
+                            <p class="fs-1p1r">내가 남긴 리뷰</p>
+                            <h4 class="fw-bold" th:text="|*{reviewCount}건|"></h4>
+                            <div class="section-div-movieList mt1r">
+                                <div th:each="review, index : ${reviewList}">
+                                    <div class="floatL mb4r shadow p0p5r text-start" th:classappend="${index.count} % 2 == 1 ? 'reviewCard' : 'reviewCardR'">
+                                        <div class="myReviewImgDiv">
+                                            <img th:src="|/poster/${review.storedFileName}|" width="150"/>
+                                        </div>
+                                        <div class="myReviewDiv">
+                                            <span th:text="${review.title}">영화제목</span><br>
+                                            <i class="fa fa-star"></i><span th:text="${review.star}">평점</span>
+                                            <div class="reviewContent" style="width: 355px;"
+                                                 th:text="${#strings.length(review.content) > 90} ? |${#strings.substring(review.content, 0, 90)}...| : ${review.content}">리뷰 내용
+                                            </div>
+                                            <span class="myReview cursor-pointer" th:onclick="|location.href='@{/movie/{id} (id=${review.movieId})}'|">자세히 보기</span>
+                                        </div>
+                                    </div>
+                                    <div th:if="${index.count} % 2 == 0" style="clear: both;"></div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-lg-3 mb-5">
-                        <div class="card shadow border-0">
-                            <img class="card-img-top" src="https://dummyimage.com/328x472/ced4da/6c757d" alt="..." />
-                            <div class="card-body p-4">
-                                <div class="badge bg-primary bg-gradient rounded-pill mb-2">SF</div><br>
-                                <div class="mb-2"><i class="fa fa-star"></i><span>4.5</span></div>
-                                <a class="text-decoration-none link-dark stretched-link" href="#!"><h5 class="card-title mb-2">듄</h5></a>
-                            </div>
+                        <div style="clear:both;"></div>
+                        <!-- 리뷰 페이징 -->
+                        <div class="text-center"
+                             th:with="urlBuilder = ${T(org.springframework.web.servlet.support.ServletUriComponentsBuilder).fromCurrentRequest()}, size = ${page.size}">
+                            <span class="mr1r" th:with="num = ${page.currNum - 1}">
+                                <a th:href="${urlBuilder.replaceQueryParam('page', num).replaceQueryParam('size', size).toUriString()}"
+                                   th:class="${page.first} ? 'disabled link' : 'link'">&lt;</a>
+                            </span>
+                            <span th:each="num : ${#numbers.sequence(page.startNum, page.endNum)}">
+                                <a th:href="${urlBuilder.replaceQueryParam('page', num).replaceQueryParam('size', size).toUriString()}"
+                                   th:if="${num >= 0}" th:text="${num + 1}"
+                                   th:class="${num == page.currNum} ? 'fw-bold mr1r' : 'link mr1r'">1</a>
+                            </span>
+                            <span class="mr1r" th:with="num = ${page.currNum + 1}">
+                                <a th:href="${urlBuilder.replaceQueryParam('page', num).replaceQueryParam('size', size).toUriString()}"
+                                   th:class="${page.last} ? 'disabled link' : 'link'">&gt;</a>
+                            </span>
                         </div>
                     </div>
-                    <div class="col-lg-3 mb-5">
-                        <div class="card shadow border-0">
-                            <img class="card-img-top" src="https://dummyimage.com/328x472/ced4da/6c757d" alt="..." />
-                            <div class="card-body p-4">
-                                <div class="badge bg-primary bg-gradient rounded-pill mb-2">SF</div><br>
-                                <div class="mb-2"><i class="fa fa-star"></i><span>4.5</span></div>
-                                <a class="text-decoration-none link-dark stretched-link" href="#!"><h5 class="card-title mb-2">듄</h5></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                </form>
             </div>
         </section>
     </main>
