@@ -4,11 +4,15 @@ import com.tistory.dnjsrud.disney.genre.Genre;
 import com.tistory.dnjsrud.disney.genre.GenreCreateForm;
 import com.tistory.dnjsrud.disney.genre.GenreModifyForm;
 import com.tistory.dnjsrud.disney.genre.GenreService;
+import com.tistory.dnjsrud.disney.global.MyPage;
 import com.tistory.dnjsrud.disney.movie.*;
 import com.tistory.dnjsrud.disney.validate.ValidationSequence;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -85,10 +89,39 @@ public class AdminController {
         return "redirect:/";
     }
 
+    /**
+     * 영화 목록
+     * @param condition
+     * @param model
+     * @param pageable
+     * @return
+     */
     @GetMapping("/movie/list")
-    public String movieList(Model model) {
-        List<MovieAdminListDto> movieAdminListDto = movieService.findMovieAdminListDto();
-        model.addAttribute("movieAdminListDto", movieAdminListDto);
+    public String movieList(@ModelAttribute MovieSearchCondition condition, Model model,
+                            @PageableDefault(page = 0, size = 10) Pageable pageable) {
+        Page<MovieAdminListDto> result;
+        if(condition.getTitle() != null || condition.getGenreId() != null) {
+            result = movieService.findMovieAdminListDto(pageable, condition);
+        } else {
+            result = movieService.findMovieAdminListDto(pageable);
+        }
+
+        // 평점 소수점 둘째 자리까지 표기
+        for (MovieAdminListDto movieAdminListDto : result) {
+            movieAdminListDto.setStar(Float.parseFloat(String.format("%.2f", movieAdminListDto.getStar())));
+        }
+        model.addAttribute("movieAdminListDto", result.getContent());
+
+        long totalCount = result.getTotalElements();
+        model.addAttribute("totalCount", totalCount);
+
+        List<Genre> genreList = genreService.findGenres();
+        model.addAttribute("genreList", genreList);
+
+        model.addAttribute("condition", condition);
+
+        MyPage page = new MyPage(result);
+        model.addAttribute("page", page);
 
         return "admin/movie/list";
     }
