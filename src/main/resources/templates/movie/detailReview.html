@@ -54,7 +54,7 @@
                 <div class="floatL inline-block" style="width: 40%;">
                     <!-- 내가 작성한 리뷰 -->
                     <div th:if="${myReview != null}">
-                        <form th:action="@{/review/delete/{id} (id=${movie.id})}" method="post" id="myReviewForm"
+                        <form th:action="@{/review/delete/{id} (id=${movie.id}, page=${page.currNum}, size=${page.size})}" method="post" id="myReviewForm"
                               onsubmit="return checkDelete()">
                             <h3 class="mb0p5r">나의 리뷰</h3>
                             <span class="star">
@@ -69,7 +69,7 @@
                             </div>
                             <input type="hidden" name="page" th:value="${page.currNum}" />
                             <input type="hidden" name="size" th:value="${page.size}" />
-                            <input type="button" value="수정" class="submit-btn btn-mini" th:onclick="|location.href='@{/review/modify/{id} (id=${movie.id})}'|" />
+                            <input type="button" value="수정" class="submit-btn btn-mini" th:onclick="|location.href='@{/review/modify/{id} (id=${movie.id}, page=${page.currNum}, size=${page.size})}'|" />
                             <input type="submit" value="삭제" class="submit-btn btn-mini" />
                             <input type="hidden" name="_csrf" value="{{_csrf.token}}"/>
                         </form>
@@ -98,19 +98,21 @@
                     <!-- 리뷰 페이징 -->
                     <div class="text-center"
                          th:with="urlBuilder = ${T(org.springframework.web.servlet.support.ServletUriComponentsBuilder).fromCurrentRequest()}, size = ${page.size}">
-                        <span class="mr1r" th:with="num = ${page.currNum - 1}">
-                            <a th:href="${urlBuilder.replaceQueryParam('page', num).replaceQueryParam('size', size).toUriString()}"
-                               th:class="${page.first} ? 'disabled link' : 'link'">&lt;</a>
+                            <span class="mr1r" th:with="num = ${page.currNum - 1}">
+                                <a th:href="${urlBuilder.replaceQueryParam('page', num).replaceQueryParam('size', size).toUriString()}"
+                                   th:class="${page.first} ? 'disabled link' : 'link'">&lt;</a>
+                            </span>
+                        <span th:each="num : ${#numbers.sequence(page.startNum, page.endNum)}" class="mr1r">
+                            <span th:if="${num == page.currNum}" th:text="${num + 1}" class="fw-bold cursor-default"></span>
+                            <span th:if="${num != page.currNum}">
+                                <a th:text="${num + 1}" class="link"
+                                   th:href="${urlBuilder.replaceQueryParam('page', num).replaceQueryParam('size', size).toUriString()}">1</a>
+                            </span>
                         </span>
-                        <span th:each="num : ${#numbers.sequence(page.startNum, page.endNum)}">
-                            <a th:href="${urlBuilder.replaceQueryParam('page', num).replaceQueryParam('size', size).toUriString()}"
-                               th:if="${num >= 0}" th:text="${num + 1}"
-                               th:class="${num == page.currNum} ? 'fw-bold mr1r' : 'link mr1r'">1</a>
-                        </span>
-                        <span class="mr1r" th:with="num = ${page.currNum + 1}">
-                            <a th:href="${urlBuilder.replaceQueryParam('page', num).replaceQueryParam('size', size).toUriString()}"
-                               th:class="${page.last} ? 'disabled link' : 'link'">&gt;</a>
-                        </span>
+                        <span th:with="num = ${page.currNum + 1}">
+                                <a th:href="${urlBuilder.replaceQueryParam('page', num).replaceQueryParam('size', size).toUriString()}"
+                                   th:class="${page.last} ? 'disabled link' : 'link'">&gt;</a>
+                            </span>
                     </div>
                 </div>
             </div>

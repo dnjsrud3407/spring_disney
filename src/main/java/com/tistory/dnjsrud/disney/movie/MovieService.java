@@ -130,12 +130,12 @@ public class MovieService {
     }
 
     /**
-     * Admin 단 - 영화 전체 조회
+     * Admin 단 - 영화 전체 조회 (검색 조건 X)
      * @return List<MovieAdminListDto>
      */
-    public List<MovieAdminListDto> findMovieAdminListDto() {
-        List<MovieAdminListDto> movieAdminListDto = movieRepository.findMovieAdminListDto();
-        for (MovieAdminListDto adminListDto : movieAdminListDto) {
+    public Page<MovieAdminListDto> findMovieAdminListDto(Pageable pageable) {
+        Page<MovieAdminListDto> result = movieRepository.findMovieAdminListDto(pageable);
+        for (MovieAdminListDto adminListDto : result.getContent()) {
             // 장르 이름 list 구하기
             List<String> genreNameList = movieRepository.findGenreNameByMovieId(adminListDto.getId());
             adminListDto.changeGenreList(genreNameList);
@@ -145,7 +145,26 @@ public class MovieService {
             adminListDto.changeReviewCount(reviewCount);
         }
 
-        return movieAdminListDto;
+        return result;
+    }
+
+    /**
+     * Admin 단 - 영화 전체 조회 (검색 조건 O)
+     * @return List<MovieAdminListDto>
+     */
+    public Page<MovieAdminListDto> findMovieAdminListDto(Pageable pageable, MovieSearchCondition condition) {
+        Page<MovieAdminListDto> result = movieRepository.findMovieAdminListDto(pageable, condition);
+        for (MovieAdminListDto adminListDto : result.getContent()) {
+            // 장르 이름 list 구하기
+            List<String> genreNameList = movieRepository.findGenreNameByMovieId(adminListDto.getId());
+            adminListDto.changeGenreList(genreNameList);
+
+            // 리뷰 Count 구하기
+            Long reviewCount = reviewRepository.countByMovieId(adminListDto.getId());
+            adminListDto.changeReviewCount(reviewCount);
+        }
+
+        return result;
     }
 
     /**

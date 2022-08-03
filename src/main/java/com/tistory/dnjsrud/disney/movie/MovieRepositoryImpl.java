@@ -3,9 +3,7 @@ package com.tistory.dnjsrud.disney.movie;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.tistory.dnjsrud.disney.moviegenre.QMovieGenre;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 
@@ -30,6 +28,7 @@ public class MovieRepositoryImpl implements MovieRepositoryCustom {
                 .from(movie)
                 .join(movie.poster, poster)
                 .where(movie.visible.eq(true))
+                .orderBy(movie.id.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -54,6 +53,7 @@ public class MovieRepositoryImpl implements MovieRepositoryCustom {
                 .where(movie.visible.eq(true),
                         movieTitleLike(condition.getTitle()),
                         genreIdEq(condition.getGenreId()))
+                .orderBy(movie.id.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -93,12 +93,47 @@ public class MovieRepositoryImpl implements MovieRepositoryCustom {
     }
 
     @Override
-    public List<MovieAdminListDto> findMovieAdminListDto() {
-        return queryFactory
+    public Page<MovieAdminListDto> findMovieAdminListDto(Pageable pageable) {
+        List<MovieAdminListDto> content = queryFactory
                 .select(new QMovieAdminListDto(movie.id, movie.title, movie.releaseDate, movie.star, poster.storedFileName, movie.visible))
                 .from(movie)
                 .join(movie.poster, poster)
+                .orderBy(movie.id.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
+
+        JPAQuery<Long> countQuery = queryFactory
+                .select(movie.count())
+                .from(movie)
+                .join(movie.poster, poster);
+
+        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
+    }
+
+    @Override
+    public Page<MovieAdminListDto> findMovieAdminListDto(Pageable pageable, MovieSearchCondition condition) {
+        List<MovieAdminListDto> content = queryFactory
+                .select(new QMovieAdminListDto(movie.id, movie.title, movie.releaseDate, movie.star, poster.storedFileName, movie.visible)).distinct()
+                .from(movie)
+                .join(movie.poster, poster)
+                .join(movie.movieGenres, movieGenre)
+                .join(movieGenre.genre, genre)
+                .where(movieTitleLike(condition.getTitle()),
+                        genreIdEq(condition.getGenreId()))
+                .orderBy(movie.id.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        JPAQuery<Long> countQuery = queryFactory
+                .select(movie.count())
+                .from(movie)
+                .join(movie.poster, poster)
+                .where(movieTitleLike(condition.getTitle()),
+                        genreIdEq(condition.getGenreId()));
+
+        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
     }
 
     @Override

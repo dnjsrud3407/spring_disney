@@ -11,5 +11,6 @@ public interface MovieRepositoryCustom {
     Page<MovieListDto> searchMovieListDto(Pageable pageable, MovieSearchCondition condition);
     Optional<MovieDetailDto> findMovieDetailDtoByMovieId(Long movieId);
     List<String> findGenreNameByMovieId(Long movieId);
-    List<MovieAdminListDto> findMovieAdminListDto();
+    Page<MovieAdminListDto> findMovieAdminListDto(Pageable pageable);
+    Page<MovieAdminListDto> findMovieAdminListDto(Pageable pageable, MovieSearchCondition condition);
 }
