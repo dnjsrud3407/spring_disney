@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org">
     <!-- Header -->
     <div th:replace="~{fragment/header :: header}"></div>
     <body class="h-100">
@@ -65,39 +64,26 @@
         <section style="height: 500px;">
             <div class="reviewDiv">
                 <div class="floatL inline-block" style="width: 40%;">
-                    <!-- 로그인 안 했을 때 -->
-                    <div sec:authorize="isAnonymous()">
-                        <form>
-                            <h3>리뷰 남기기</h3>
-                            <span class="star">
-                                ★★★★★
-                                <span>★★★★★</span>
-                                <input type="range" value="1" step="1" min="0" max="10" readonly>
-                            </span>
-                            <div>
-                                <textarea name="content" class="textarea-big cursor-pointer" readonly th:onclick="|location.href='@{/user/loginForm}'|">로그인 시 이용가능합니다. 로그인 페이지 이동</textarea>
-                            </div>
-                            <input type="button" value="등록" class="submit-cancel btn-middle">
-                        </form>
-                    </div>
-                    <!-- 로그인 되었을 때 -->
-                    <div sec:authorize="isAuthenticated()">
-                        <form th:action="@{/review/create/{id} (id=${movie.id}, page=${page.currNum}, size=${page.size})}" th:object="${reviewCreateForm}" method="post"
+                    <!-- 리뷰 쓰기 -->
+                    <div th:if="${myReview == null}">
+                        <form th:action="@{/review/modify/{id} (id=${movie.id}, page=${page.currNum}, size=${page.size})}" th:object="${reviewModifyForm}" method="post"
                               onsubmit="return checkForm()">
-                            <h3>리뷰 남기기</h3>
+                            <input type="hidden" name="_csrf" value="{{_csrf.token}}"/>
+                            <h3>리뷰 수정</h3>
                             <span class="star">
                                 ★★★★★
-                                <span>★★★★★</span>
+                                <span th:style="|width: ${reviewModifyForm.star * 10}%|">★★★★★</span>
                                 <input type="range" oninput="drawStar(this)" value="1" step="1" min="0" max="10">
                             </span>
-                            <input class="displayStar" disabled />
+                            <input th:value="${#numbers.formatInteger(reviewModifyForm.star, 1)}" class="displayStar" disabled/>
                             <input type="hidden" name="star" th:field="*{star}">
-                            <p class="text-start text-error" th:if="${#fields.hasErrors('star')}" th:errors="*{star}"></p><br>
+                            <p class="text-start  text-error" th:if="${#fields.hasErrors('star')}" th:errors="*{star}"></p><br>
                             <textarea name="content" class="textarea-big" th:field="*{content}"></textarea>
-                            <p class="text-start text-error" th:if="${#fields.hasErrors('content')}" th:errors="*{content}"></p><br>
+                            <p class="text-start  text-error" th:if="${#fields.hasErrors('content')}" th:errors="*{content}"></p><br>
                             <input type="hidden" name="page" th:value="${page.currNum}" />
                             <input type="hidden" name="size" th:value="${page.size}" />
-                            <input type="submit" value="등록" class="submit-btn btn-middle">
+                            <input type="submit" value="수정" class="submit-btn btn-middle">
+                            <input type="button" value="취소" class="submit-btn btn-middle" th:onclick="|location.href='@{/movie/{id} (id=${movie.id}, page=${page.currNum}, size=${page.size})}'|">
                             <input type="hidden" name="_csrf" value="{{_csrf.token}}"/>
                         </form>
                     </div>
