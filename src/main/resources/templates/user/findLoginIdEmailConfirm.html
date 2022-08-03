@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!-- Header -->
+<div th:replace="~{fragment/header :: header}"></div>
+<body class="h-100">
+<!-- Navigation-->
+<div th:replace="~{fragment/navigation :: navigation}"></div>
+<main>
+  <section>
+    <div class="my10r">
+      <div class="text-center">
+        <h2 class="fw-bold">아이디 찾기</h2>
+        <div class="joinDivStyle">
+          <form th:action method="post">
+            <div class="joinDiv" th:object="${findLoginIdEmailConfirmForm}">
+              <label for="email" class="text-start">이메일 확인</label>
+              <input type="text" id="email" th:field="*{email}" class="text-field" placeholder="이메일"
+                     th:class="${#fields.hasErrors('email')? 'text-field fieldError' : 'text-field'}">
+              <p class="text-start text-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></p>
+            </div><br>
+            <input type="submit" value="찾기" class="submit-btn btn">
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+<!-- Footer-->
+<div th:replace="~{fragment/footer :: footer}"></div>
+</body>
+</html>

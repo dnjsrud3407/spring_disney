@@ -70,6 +70,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     private String[] urlPermitAll() {
         String[] urls = new String[] {
                 "/", "/disney", "/user/loginForm", "/user/loginErr", "/user/login", "/user/join", "/user/loginErr",
+                "/user/findLoginId", "/user/findLoginIdResult", "/user/findPassword", "/user/findPasswordResult",
                 "/movie/**"
         };
         return urls;

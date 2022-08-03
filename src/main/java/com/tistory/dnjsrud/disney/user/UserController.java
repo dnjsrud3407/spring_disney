@@ -16,11 +16,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
@@ -35,6 +37,12 @@ public class UserController {
     private final ReviewRepository reviewRepository;
     private final MessageSource ms;
 
+    /**
+     * 로그인
+     * @param exceptionMsg
+     * @param redirectAttributes
+     * @return
+     */
     @GetMapping("/loginForm")
     public String login(@RequestParam(required = false) String exceptionMsg, RedirectAttributes redirectAttributes) {
         // 로그인 실패시 CustomFailureHandler -> 1 -> 2. /loginErr 로 이동
@@ -66,6 +74,11 @@ public class UserController {
         return "user/login";
     }
 
+    /**
+     * 회원가입
+     * @param model
+     * @return
+     */
     @GetMapping("/join")
     public String join(Model model) {
         model.addAttribute("userJoinForm", new UserJoinForm());
@@ -110,9 +123,126 @@ public class UserController {
         return "redirect:/user/loginForm";
     }
 
+    /**
+     * 아이디 찾기
+     * - 이메일 인증
+     * @param model
+     * @return
+     */
+    @GetMapping("/findLoginId")
+    public String findLoginId(Model model) {
+        model.addAttribute("findLoginIdEmailConfirmForm", new FindLoginIdEmailConfirmForm());
+
+        return "user/findLoginIdEmailConfirm";
+    }
+
+    @PostMapping("/findLoginId")
+    public String findLoginId(@Validated(ValidationSequence.class) FindLoginIdEmailConfirmForm findLoginIdEmailConfirmForm,
+                              BindingResult result,
+                              RedirectAttributes redirectAttributes) {
+        // 1. findLoginIdEmailConfirmForm 중 Validation이 안 지켜졌을 경우
+        if(result.hasErrors()) {
+            return "user/findLoginIdEmailConfirm";
+        }
+
+        // 이메일로 loginId 찾기
+        String loginId;
+        try {
+            loginId = userService.findUserLoginId(findLoginIdEmailConfirmForm.getEmail());
+        } catch (IllegalStateException e) {
+            result.addError(new FieldError("findLoginIdEmailConfirmForm", "email", e.getMessage()));
+
+            return "user/findLoginIdEmailConfirm";
+        }
+
+        // loginId가 존재하면 view에 보여주기
+        redirectAttributes.addFlashAttribute("loginId", loginId);
+        return "redirect:/user/findLoginIdResult";
+    }
+
+    @GetMapping("/findLoginIdResult")
+    public String findLoginIdResult(HttpServletRequest request, Model model) throws Exception {
+        String loginId;
+        Map<String, ?> flashMap = RequestContextUtils.getInputFlashMap(request);
+        if(flashMap!=null) {
+            loginId = (String) flashMap.get("loginId");
+            model.addAttribute("loginId", loginId);
+        } else {
+            // findLoginId 경로로 접속한게 아닐 때
+            throw new Exception();
+        }
+
+        return "user/findLoginIdResult";
+    }
+
+    /**
+     * 비밀번호 찾기
+     * - 아이디, 이메일 인증
+     * @param model
+     * @return
+     */
+    @GetMapping("/findPassword")
+    public String findPassword(Model model) {
+        model.addAttribute("findPasswordConfirmForm", new FindPasswordConfirmForm());
+
+        return "user/findPasswordConfirm";
+    }
+
+    @PostMapping("/findPassword")
+    public String findPassword(@Validated(ValidationSequence.class) FindPasswordConfirmForm findPasswordConfirmForm,
+                               BindingResult result, RedirectAttributes redirectAttributes) {
+        // 1. findPasswordConfirmForm 중 Validation이 안 지켜졌을 경우
+        if(result.hasErrors()) {
+            return "user/findPasswordConfirm";
+        }
+
+        // 아이디, 이메일이 일치하는 회원이 있는지 확인
+        long userId = userService.findUserByLoginIdAndEmail(findPasswordConfirmForm.getLoginId(), findPasswordConfirmForm.getEmail());
+        if(userId < 0) {
+            String msg = ms.getMessage("user.confirmLoginIdEmail", null, null);
+            result.addError(new ObjectError("findPasswordConfirmForm", null, null, msg));
+
+            return "user/findPasswordConfirm";
+        }
+
+        // 일치하다면 임시 비밀번호 발급 후 비밀번호 변경
+        try {
+            userService.sendRandomPasswordEmail(userId, findPasswordConfirmForm.getEmail());
+        } catch (MessagingException e) {
+            String msg = ms.getMessage("requestAdm", null, null);
+            result.addError(new ObjectError("findPasswordConfirmForm", null, null, msg));
+        }
+
+        redirectAttributes.addFlashAttribute("email", findPasswordConfirmForm.getEmail());
+        return "redirect:/user/findPasswordResult";
+    }
+
+    @GetMapping("/findPasswordResult")
+    public String findPasswordResult(HttpServletRequest request, Model model) throws Exception {
+        String email;
+        Map<String, ?> flashMap = RequestContextUtils.getInputFlashMap(request);
+        if(flashMap!=null) {
+            email = (String) flashMap.get("email");
+            model.addAttribute("email", email);
+        } else {
+            // findPassword 경로로 접속한게 아닐 때
+            throw new Exception();
+        }
+
+        return "user/findPasswordResult";
+    }
+
+    /**
+     * 마이페이지
+     * @param model
+     * @param request
+     * @param pageable
+     * @param securityUser
+     * @return
+     */
     @GetMapping("/myPage")
     public String myPage(Model model, HttpServletRequest request,
-                         @PageableDefault(page = 0, size = 5) Pageable pageable,
+                         @PageableDefault(page = 0, size = 6) Pageable pageable,
                          @AuthenticationPrincipal SecurityUser securityUser) {
         Long userId = securityUser.getId();
         UserInfoDto userInfoDto = userService.findUserInfoDto(userId);
@@ -141,6 +271,12 @@ public class UserController {
         return "redirect:/user/myPage";
     }
 
+    /**
+     * 닉네임 변경
+     * @param securityUser
+     * @param model
+     * @return
+     */
     @GetMapping("/modifyNickname")
     public String modifyNickname(@AuthenticationPrincipal SecurityUser securityUser, Model model) {
         Long userId = securityUser.getId();
@@ -175,14 +311,20 @@ public class UserController {
         return "redirect:/user/myPage";
     }
 
-    @GetMapping("/modifyPw")
+    /**
+     * 비밀번호 변경
+     * - 비밀번호 인증
+     * @param model
+     * @return
+     */
+    @GetMapping("/modifyPasswordConfirm")
     public String modifyPasswordConfirm(Model model) {
         model.addAttribute("modifyPasswordConfirmForm", new ModifyPasswordConfirmForm());
 
         return "user/modifyPasswordConfirm";
     }
 
-    @PostMapping("/modifyPw")
+    @PostMapping("/modifyPasswordConfirm")
     public String modifyPasswordConfirm(@Validated(ValidationSequence.class) ModifyPasswordConfirmForm modifyPasswordConfirmForm, BindingResult result,
                                         @AuthenticationPrincipal SecurityUser securityUser) {
         // 1. modifyPasswordForm 중 Validation이 안 지켜졌을 경우
@@ -229,7 +371,13 @@ public class UserController {
         return "redirect:/user/myPage";
     }
 
-    // 회원탈퇴
+    /**
+     * 회원탈퇴
+     * - 비밀번호 인증
+     * @param securityUser
+     * @param model
+     * @return
+     */
     @GetMapping("/delete")
     public String deleteUser(@AuthenticationPrincipal SecurityUser securityUser, Model model) {
         // 회원이 남긴 리뷰 수

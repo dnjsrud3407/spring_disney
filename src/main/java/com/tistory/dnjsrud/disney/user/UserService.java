@@ -1,5 +1,7 @@
 package com.tistory.dnjsrud.disney.user;
 
+import com.tistory.dnjsrud.disney.global.EmailSender;
+import com.tistory.dnjsrud.disney.global.RandomPassword;
 import com.tistory.dnjsrud.disney.review.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.mail.MessagingException;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,6 +29,9 @@ public class UserService implements UserDetailsService {
     private final MessageSource ms;
 
     private final PasswordEncoder passwordEncoder;
+
+    private final RandomPassword randomPassword;
+    private final EmailSender emailSender;
 
     /**
      * 회원가입
@@ -96,13 +102,49 @@ public class UserService implements UserDetailsService {
         throw new IllegalStateException("존재하지 않는 회원입니다.");
     }
 
-    // 회원 아이디 찾기
-    public String findUserId(String email) {
+    /**
+     * 회원 아이디 찾기
+     * @param email
+     * @return
+     */
+    public String findUserLoginId(String email) {
         Optional<String> loginId = userRepository.findLoginIdByEmail(email);
         if (loginId.isEmpty()) {
             throw new IllegalStateException("이메일이 일치하지 않습니다.");
         }
         return loginId.get();
+    }
+
+    /**
+     * 비밀번호 찾기 시 로그인 아이디, 이메일 확인
+     * @param loginId
+     * @param email
+     * @return
+     */
+    public long findUserByLoginIdAndEmail(String loginId, String email) {
+        Optional<User> findUser = userRepository.findByLoginIdAndEmail(loginId, email);
+        if(findUser.isPresent()) {
+            return findUser.get().getId();
+        }
+        return -1;
+    }
+
+    /**
+     * random 패스워드를 생성하여 이메일 전송 후 회원 비밀번호를 변경한다
+     * @param userId
+     * @param email
+     */
+    @Transactional
+    public void sendRandomPasswordEmail(Long userId, String email) throws MessagingException {
+        String password = randomPassword.makePassword(10);
+
+        // 임시 비밀번호 메일 보내기
+        String to = email;
+        String title = "Disney | 임시 비밀번호 이메일 입니다.";
+        emailSender.send(to, title, "user/email", password);
+
+        // 회원 비밀번호 변경
+        changePassword(userId, password);
     }
 
     /**

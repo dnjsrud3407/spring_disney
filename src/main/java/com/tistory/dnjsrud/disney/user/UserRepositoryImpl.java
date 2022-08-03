@@ -35,4 +35,15 @@ public class UserRepositoryImpl implements UserRepositoryCustom{
                 .fetchOne()
         );
     }
+
+    @Override
+    public Optional<String> findLoginIdByEmail(String email) {
+        return Optional.ofNullable(
+                queryFactory
+                .select(user.loginId)
+                .from(user)
+                .where(user.email.eq(email), user.isEnabled.eq(true))
+                .fetchOne()
+        );
+    }
 }
