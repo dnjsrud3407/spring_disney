@@ -216,9 +216,12 @@ public class AdminController {
     }
 
     @GetMapping("/genre/list")
-    public String genreList(Model model) {
-        List<Genre> genreList = genreService.findGenres();
-        model.addAttribute("genreList", genreList);
+    public String genreList(@PageableDefault(page = 0, size = 10) Pageable pageable, Model model) {
+        Page<Genre> result = genreService.findGenres(pageable);
+
+        MyPage page = new MyPage(result);
+        model.addAttribute("genreList", result.getContent());
+        model.addAttribute("page", page);
 
         return "admin/genre/list";
     }

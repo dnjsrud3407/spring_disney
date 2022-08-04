@@ -2,6 +2,8 @@ package com.tistory.dnjsrud.disney.genre;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -70,9 +72,17 @@ public class GenreService {
         }
     }
 
-    // 장르 정체 조회
+    // 장르 전체 조회
     public List<Genre> findGenres() {
         return genreRepository.findAll();
+    }
+
+    /**
+     * Admin 단 - 장르 전체 조회
+     * @return
+     */
+    public Page<Genre> findGenres(Pageable pageable) {
+        return genreRepository.findAllByOrderByIdDesc(pageable);
     }
 
     // 장르 정보 조회
