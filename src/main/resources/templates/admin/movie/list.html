@@ -24,7 +24,12 @@
 
             // 검색 이미지 클릭
             $('.movieListSearch').click(function() {
-                $('form').submit();
+                var title = $('input[name=title]').attr('value');
+
+                if(title.trim().length > 0) {
+                    $('input[name=title]').val(title.trim());
+                    $('form').submit();
+                }
             });
         });
     </script>
@@ -78,24 +83,7 @@
                             </table>
                         </div>
                         <!-- 영화 페이징 -->
-                        <div class="text-center"
-                             th:with="urlBuilder = ${T(org.springframework.web.servlet.support.ServletUriComponentsBuilder).fromCurrentRequest()}, size = ${page.size}">
-                            <span class="mr1r" th:with="num = ${page.currNum - 1}">
-                                <a th:href="${urlBuilder.replaceQueryParam('page', num).replaceQueryParam('size', size).toUriString()}"
-                                   th:class="${page.first} ? 'disabled link' : 'link'">&lt;</a>
-                            </span>
-                            <span th:each="num : ${#numbers.sequence(page.startNum, page.endNum)}" class="mr1r">
-                                <span th:if="${num == page.currNum}" th:text="${num + 1}" class="fw-bold cursor-default"></span>
-                                <span th:if="${num != page.currNum}">
-                                    <a th:text="${num + 1}" class="link"
-                                       th:href="${urlBuilder.replaceQueryParam('page', num).replaceQueryParam('size', size).toUriString()}">1</a>
-                                </span>
-                            </span>
-                            <span th:with="num = ${page.currNum + 1}">
-                                <a th:href="${urlBuilder.replaceQueryParam('page', num).replaceQueryParam('size', size).toUriString()}"
-                                   th:class="${page.last} ? 'disabled link' : 'link'">&gt;</a>
-                            </span>
-                        </div>
+                        <div th:replace="~{fragment/paging :: paging-adminSearchCondition}"></div>
                     </div>
                 </div>
             </form>

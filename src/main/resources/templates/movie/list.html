@@ -6,8 +6,6 @@
     <!-- Navigation-->
     <div th:replace="~{fragment/navigation :: navigation-movie}"></div>
     <script>
-        history.replaceState({}, null, location.pathname);
-
         $(document).ready(function() {
             // 장르 클릭
             $('.genreSelect').click(function() {
@@ -24,7 +22,12 @@
 
             // 검색 이미지 클릭
             $('.movieListSearch').click(function() {
-                $('form').submit();
+                var title = $('input[name=title]').attr('value');
+
+                if(title.trim().length > 0) {
+                    $('input[name=title]').val(title.trim());
+                    $('form').submit();
+                }
             });
         });
     </script>
@@ -61,7 +64,7 @@
                         </div>
                     </div>
                     <div style="clear: both;"></div>
-                    <div th:replace="~{fragment/paging :: paging}"></div>
+                    <div th:replace="~{fragment/paging :: paging-userSearchCondition}"></div>
                 </div>
             </form>
         </section>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
   <body>
-    <div th:fragment="paging" id="paging" class="text-center"
+    <div th:fragment="paging" class="text-center"
          th:with="urlBuilder = ${T(org.springframework.web.servlet.support.ServletUriComponentsBuilder).fromCurrentRequest()}, size = ${page.size}">
       <span class="mr1r" th:with="num = ${page.currNum - 1}">
           <a th:href="${urlBuilder.replaceQueryParam('page', num).replaceQueryParam('size', size).toUriString()}"
@@ -16,6 +16,42 @@
       </span>
       <span th:with="num = ${page.currNum + 1}">
           <a th:href="${urlBuilder.replaceQueryParam('page', num).replaceQueryParam('size', size).toUriString()}"
+             th:class="${page.last} ? 'disabled link' : 'link'">&gt;</a>
+      </span>
+    </div>
+
+    <div th:fragment="paging-userSearchCondition" class="text-center" th:with="size = ${page.size}">
+      <span class="mr1r" th:with="num = ${page.currNum - 1}">
+          <a th:href="@{/movie/list (genreId=${condition.genreId}, title=${condition.title}, page=${num}, size=${size})}"
+             th:class="${page.first} ? 'disabled link' : 'link'">&lt;</a>
+      </span>
+        <span th:each="num : ${#numbers.sequence(page.startNum, page.endNum)}" class="mr1r">
+          <span th:if="${num == page.currNum}" th:text="${num + 1}" class="fw-bold cursor-default"></span>
+          <span th:if="${num != page.currNum}">
+              <a th:text="${num + 1}" class="link"
+                 th:href="@{/movie/list (genreId=${condition.genreId}, title=${condition.title}, page=${num}, size=${size})}">1</a>
+          </span>
+      </span>
+        <span th:with="num = ${page.currNum + 1}">
+          <a th:href="@{/movie/list (genreId=${condition.genreId}, title=${condition.title}, page=${num}, size=${size})}"
+             th:class="${page.last} ? 'disabled link' : 'link'">&gt;</a>
+      </span>
+    </div>
+
+    <div th:fragment="paging-adminSearchCondition" class="text-center" th:with="size = ${page.size}">
+      <span class="mr1r" th:with="num = ${page.currNum - 1}">
+          <a th:href="@{/admin/movie/list (genreId=${condition.genreId}, title=${condition.title}, page=${num}, size=${size})}"
+             th:class="${page.first} ? 'disabled link' : 'link'">&lt;</a>
+      </span>
+        <span th:each="num : ${#numbers.sequence(page.startNum, page.endNum)}" class="mr1r">
+          <span th:if="${num == page.currNum}" th:text="${num + 1}" class="fw-bold cursor-default"></span>
+          <span th:if="${num != page.currNum}">
+              <a th:text="${num + 1}" class="link"
+                 th:href="@{/admin/movie/list (genreId=${condition.genreId}, title=${condition.title}, page=${num}, size=${size})}">1</a>
+          </span>
+      </span>
+        <span th:with="num = ${page.currNum + 1}">
+          <a th:href="@{/admin/movie/list (genreId=${condition.genreId}, title=${condition.title}, page=${num}, size=${size})}"
              th:class="${page.last} ? 'disabled link' : 'link'">&gt;</a>
       </span>
     </div>
