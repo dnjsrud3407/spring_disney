@@ -137,6 +137,18 @@ public class MovieRepositoryImpl implements MovieRepositoryCustom {
     }
 
     @Override
+    public List<MovieListDto> findMovieListDtoTop(int num) {
+        return queryFactory
+                .select(new QMovieListDto(movie.id, movie.title, movie.releaseDate, movie.star, poster.storedFileName))
+                .from(movie)
+                .join(movie.poster, poster)
+                .where(movie.visible.eq(true))
+                .orderBy(movie.star.desc(), movie.id.desc())
+                .limit(num)
+                .fetch();
+    }
+
+    @Override
     public List<String> findGenreNameByMovieId(Long movieId) {
         return queryFactory
                 .select(genre.genreName)

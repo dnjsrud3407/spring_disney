@@ -1,13 +1,19 @@
 package com.tistory.dnjsrud.disney;
 
+import com.tistory.dnjsrud.disney.movie.MovieListDto;
+import com.tistory.dnjsrud.disney.movie.MovieService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @Controller
+@RequiredArgsConstructor
 public class HomeController {
+
+    private final MovieService movieService;
 
     @GetMapping("/")
     public String index() {
@@ -15,7 +21,15 @@ public class HomeController {
     }
 
     @GetMapping("/disney")
-    public String home() {
+    public String home(Model model) {
+        List<MovieListDto> movieListTop = movieService.findMovieListDtoTop(10);
+
+        for (MovieListDto movieListDto : movieListTop) {
+            movieListDto.setStar(Float.parseFloat(String.format("%.2f", movieListDto.getStar())));
+        }
+
+        model.addAttribute("movieListTop", movieListTop);
+
         return "disney";
     }
 

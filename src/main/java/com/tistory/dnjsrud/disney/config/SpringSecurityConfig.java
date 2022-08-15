@@ -29,7 +29,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers("/", "/resources/**", "/css/**", "/js/**", "/img/**", "/poster/**");
+        web.ignoring().antMatchers("/", "/resources/**", "/css/**", "/js/**", "/slick/**", "/img/**", "/poster/**");
     }
 
     @Override
@@ -71,7 +71,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         String[] urls = new String[] {
                 "/", "/disney", "/user/loginForm", "/user/loginErr", "/user/login", "/user/join", "/user/loginErr",
                 "/user/findLoginId", "/user/findLoginIdResult", "/user/findPassword", "/user/findPasswordResult",
-                "/movie/**"
+                "/movie/**", "/topList"
         };
         return urls;
     }

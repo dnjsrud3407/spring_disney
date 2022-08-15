@@ -130,6 +130,24 @@ public class MovieService {
     }
 
     /**
+     * 메인화면 - 별점 높은 순서로 상위 8개 영화 가져오기
+     * @return
+     */
+    public List<MovieListDto> findMovieListDtoTop(int num) {
+        List<MovieListDto> movieListDtoTops = movieRepository.findMovieListDtoTop(num);
+        for (MovieListDto movieListDtoTop : movieListDtoTops) {
+            // 장르 이름 list 구하기
+            List<String> genreList = movieRepository.findGenreNameByMovieId(movieListDtoTop.getId());
+            movieListDtoTop.setGenreNameList(genreList);
+
+            // 리뷰 Count 구하기
+            Long reviewCnt = reviewRepository.countByMovieId(movieListDtoTop.getId());
+            movieListDtoTop.setReviewCount(reviewCnt);
+        }
+        return movieListDtoTops;
+    }
+
+    /**
      * Admin 단 - 영화 전체 조회 (검색 조건 X)
      * @return List<MovieAdminListDto>
      */
