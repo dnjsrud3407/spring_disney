@@ -22,21 +22,20 @@
       </script>
       <div class="nav-div">
         <div class="floatL">
-          <a class="logo" th:href="@{/disney}" href="./index.html">Disney</a>
+          <a class="logo" th:href="@{/disney}" href="./index.html">MovieStory</a>
         </div>
         <div class="floatL">
           <a th:href="@{/movie/list}" href="./movie/movieList.html">영화 소개</a>
           <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/admin/movie/create}" class="ml0p5r">영화 등록</a>
-          <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/admin/movie/list}" class="ml0p5r">영화 목록</a>
+          <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/admin/movie/list}" class="ml0p5r">영화 관리</a>
           <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/admin/genre/create}" class="ml0p5r">장르 등록</a>
-          <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/admin/genre/list}" class="ml0p5r">장르 목록</a>
+          <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/admin/genre/list}" class="ml0p5r">장르 관리</a>
         </div>
         <div class="floatR">
           <a sec:authorize="isAnonymous()" th:href="@{/user/loginForm}">로그인/회원가입</a>
           <a sec:authorize="isAuthenticated()" th:href="@{/user/myPage}">마이페이지</a>
           <span sec:authorize="isAuthenticated()" class="floatR">
             <form th:action="@{/user/logout}" method="post">
-              <input type="hidden" name="_csrf" value="{{_csrf.token}}"/>
               <button type="submit" class="logoutBtn cursor-pointer">로그아웃</button>
             </form>
           </span>
@@ -50,21 +49,20 @@
     <nav th:fragment="navigation-movie" class="bg-dark">
       <div class="nav-div">
         <div class="floatL">
-          <a class="logo" th:href="@{/disney}" href="./index.html">Disney</a>
+          <a class="logo" th:href="@{/disney}" href="./index.html">MovieStory</a>
         </div>
         <div class="floatL">
           <a th:href="@{/movie/list}" href="./movie/movieList.html">영화 소개</a>
           <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/admin/movie/create}" class="ml0p5r">영화 등록</a>
-          <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/admin/movie/list}" class="ml0p5r">영화 목록</a>
+          <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/admin/movie/list}" class="ml0p5r">영화 관리</a>
           <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/admin/genre/create}" class="ml0p5r">장르 등록</a>
-          <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/admin/genre/list}" class="ml0p5r">장르 목록</a>
+          <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/admin/genre/list}" class="ml0p5r">장르 관리</a>
         </div>
         <div class="floatR">
           <a sec:authorize="isAnonymous()" th:href="@{/user/loginForm}" href="./user/login.html">로그인/회원가입</a>
           <a sec:authorize="isAuthenticated()" th:href="@{/user/myPage}" href="./user/myPage2.html">마이페이지</a>
           <span sec:authorize="isAuthenticated()" class="floatR">
             <form th:action="@{/user/logout}" method="post">
-              <input type="hidden" name="_csrf" value="{{_csrf.token}}"/>
               <button type="submit" class="logoutBtn cursor-pointer">로그아웃</button>
             </form>
           </span>

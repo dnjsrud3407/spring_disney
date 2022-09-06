@@ -14,6 +14,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 @Configuration
 @EnableWebSecurity
@@ -65,13 +66,14 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                         .userService(customOauth2UserService)
                     .and()
                     .failureHandler(customFailureHandler);
+        http.csrf().ignoringAntMatchers("/", "/disney").csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
     }
 
     private String[] urlPermitAll() {
         String[] urls = new String[] {
                 "/", "/disney", "/user/loginForm", "/user/loginErr", "/user/login", "/user/join", "/user/loginErr",
                 "/user/findLoginId", "/user/findLoginIdResult", "/user/findPassword", "/user/findPasswordResult",
-                "/movie/**", "/topList"
+                "/movie/**", "/topList", "/error/denied"
         };
         return urls;
     }
