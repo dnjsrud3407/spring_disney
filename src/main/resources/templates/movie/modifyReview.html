@@ -2,7 +2,8 @@
 <html xmlns:th="http://www.thymeleaf.org">
     <!-- Header -->
     <div th:replace="~{fragment/header :: header}"></div>
-    <body class="h-100">
+    <body>
+    <div id="wrapper">
     <!-- Navigation-->
     <div th:replace="~{fragment/navigation :: navigation-movie}"></div>
     <script>
@@ -68,7 +69,6 @@
                     <div th:if="${myReview == null}">
                         <form th:action="@{/review/modify/{id} (id=${movie.id}, page=${page.currNum}, size=${page.size})}" th:object="${reviewModifyForm}" method="post"
                               onsubmit="return checkForm()">
-                            <input type="hidden" name="_csrf" value="{{_csrf.token}}"/>
                             <h3>리뷰 수정</h3>
                             <span class="star">
                                 ★★★★★
@@ -78,13 +78,12 @@
                             <input th:value="${#numbers.formatInteger(reviewModifyForm.star, 1)}" class="displayStar" disabled/>
                             <input type="hidden" name="star" th:field="*{star}">
                             <p class="text-start  text-error" th:if="${#fields.hasErrors('star')}" th:errors="*{star}"></p><br>
-                            <textarea name="content" class="textarea-big" th:field="*{content}"></textarea>
-                            <p class="text-start  text-error" th:if="${#fields.hasErrors('content')}" th:errors="*{content}"></p><br>
+                            <textarea name="content" class="textarea-big" spellcheck="false" th:field="*{content}"></textarea>
+                            <p class="text-start text-error" th:if="${#fields.hasErrors('content')}" th:errors="*{content}"></p><br>
                             <input type="hidden" name="page" th:value="${page.currNum}" />
                             <input type="hidden" name="size" th:value="${page.size}" />
                             <input type="submit" value="수정" class="submit-btn btn-middle">
                             <input type="button" value="취소" class="submit-btn btn-middle" th:onclick="|location.href='@{/movie/{id} (id=${movie.id}, page=${page.currNum}, size=${page.size})}'|">
-                            <input type="hidden" name="_csrf" value="{{_csrf.token}}"/>
                         </form>
                     </div>
                 </div>
@@ -113,6 +112,7 @@
             </div>
         </section>
     </main>
+    </div>
     <!-- Footer-->
     <div th:replace="~{fragment/footer :: footer}"></div>
     </body>

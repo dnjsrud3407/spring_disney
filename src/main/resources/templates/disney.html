@@ -2,7 +2,8 @@
 <html xmlns:th="http://www.thymeleaf.org">
     <!-- Header -->
     <div th:replace="~{fragment/header :: header}"></div>
-    <body class="h-100">
+    <body>
+    <div id="wrapper">
     <!-- Navigation-->
     <div th:replace="~{fragment/navigation :: navigation}"></div>
     <main>
@@ -16,7 +17,7 @@
                 </div>
             </div>
         </section>
-        <section>
+        <section class="mb5r">
             <div class="section-div-movieList">
                 <div class="fs1p1r text-muted mt4p5r mb1p5r fw-600">
                     <p>평점 Best10</p>
@@ -44,6 +45,7 @@
             </div>
         </section>
     </main>
+    </div>
     <!-- Footer-->
     <div th:replace="~{fragment/footer :: footer}"></div>
     <script type="text/javascript" th:src="@{/slick/slick.min.js}"></script>

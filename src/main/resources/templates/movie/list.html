@@ -2,7 +2,8 @@
 <html xmlns:th="http://www.thymeleaf.org">
     <!-- Header -->
     <div th:replace="~{fragment/header :: header}"></div>
-    <body class="h-100">
+    <body>
+    <div id="wrapper">
     <!-- Navigation-->
     <div th:replace="~{fragment/navigation :: navigation-movie}"></div>
     <script>
@@ -69,6 +70,7 @@
             </form>
         </section>
     </main>
+    </div>
     <!-- Footer-->
     <div th:replace="~{fragment/footer :: footer}"></div>
     </body>

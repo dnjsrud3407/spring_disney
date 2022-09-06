@@ -2,12 +2,12 @@
 <html xmlns:th="http://www.thymeleaf.org">
     <!-- Header -->
     <div th:replace="~{fragment/header :: header}"></div>
-    <body class="h-100">
+    <body>
     <main>
         <section>
             <div class="my15r">
                 <div class="text-center">
-                    <h2 class="fw-bold">Welcome to <a th:href="@{/disney}">Disney</a></h2>
+                    <h2 class="fw-bold">Welcome to <a th:href="@{/disney}">MovieStory</a></h2>
                     <div>
                         <form th:action="@{/user/login}" method="post">
                             <input type="hidden" name="_csrf" value="{{_csrf.token}}"/>
@@ -29,7 +29,5 @@
             </div>
         </section>
     </main>
-    <!-- Footer-->
-    <div th:replace="~{fragment/footer :: footer}"></div>
     </body>
 </html>
