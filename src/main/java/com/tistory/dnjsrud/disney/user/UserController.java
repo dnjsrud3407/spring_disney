@@ -259,18 +259,6 @@ public class UserController {
         return "user/myPage";
     }
 
-    @GetMapping("/reviewList")
-    public String reviewList(@PageableDefault(page = 0, size = 5) Pageable pageable,
-                             RedirectAttributes redirectAttributes,
-                             @AuthenticationPrincipal SecurityUser securityUser) {
-        Long userId = securityUser.getId();
-        Page<ReviewUserDto> result = reviewService.findReviewUserDto(pageable, userId);
-
-        redirectAttributes.addFlashAttribute("reviewList", result.getContent());
-
-        return "redirect:/user/myPage";
-    }
-
     /**
      * 닉네임 변경
      * @param securityUser
