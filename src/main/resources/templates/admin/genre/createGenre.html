@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <!-- Header -->
+    <div th:replace="~{fragment/header :: header}"></div>
+    <body>
+    <div id="wrapper">
+    <!-- Navigation-->
+    <div th:replace="~{fragment/navigation :: navigation}"></div>
+    <main>
+        <section>
+            <div class="my10r">
+                <div class="text-center">
+                    <h2 class="fw-bold">장르 등록</h2>
+                    <div>
+                        <form th:action th:object="${genreCreateForm}" method="post">
+                            <div class="joinDiv">
+                                <label for="genreName" class="text-start">장르명</label>
+                                <input type="text" id="genreName" th:field="*{genreName}" class="text-field" placeholder="장르명"
+                                       th:class="${#fields.hasErrors('genreName')? 'text-field fieldError' : 'text-field'}">
+                                <p class="text-start  text-error" th:if="${#fields.hasErrors('genreName')}" th:errors="*{genreName}"></p>
+                            </div><br>
+                            <input type="submit" value="장르 등록" class="submit-btn btn">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    </div>
+    <!-- Footer-->
+    <div th:replace="~{fragment/footer :: footer}"></div>
+    </body>
+</html>

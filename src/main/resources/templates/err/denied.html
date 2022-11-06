@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!-- Header -->
+<div th:replace="~{fragment/header :: header}"></div>
+<body>
+<div id="wrapper">
+<!-- Navigation-->
+<div th:replace="~{fragment/navigation :: navigation}"></div>
+<main class="deniedMsg">
+    <div th:text="${msg}"></div>
+</main>
+</div>
+<!-- Footer-->
+<div th:replace="~{fragment/footer :: footer}"></div>
+</body>
+</html>

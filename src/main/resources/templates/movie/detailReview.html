@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <!-- Header -->
+    <div th:replace="~{fragment/header :: header}"></div>
+    <body>
+    <div id="wrapper">
+    <!-- Navigation-->
+    <div th:replace="~{fragment/navigation :: navigation-movie}"></div>
+    <script>
+         function checkDelete() {
+            var isDelete = confirm('삭제하겠습니까?');
+            if(isDelete == true) {
+                return true;
+            }
+            return false;
+         }
+    </script>
+    <main>
+        <section>
+            <div th:object="${movie}" class="mt3p ml14p">
+                <div class="floatL">
+                    <img th:src="|/poster/*{storedFileName}|" width="200"/>
+                </div>
+                <table class="movieDetailTable">
+                    <tr>
+                        <td style="width: 20%;">제목</td>
+                        <td><span th:text="*{title}"></span></td>
+                    </tr>
+                    <tr>
+                        <td>개봉일</td>
+                        <td><span th:text="${#calendars.format(movie.releaseDate, 'yyyy-MM-dd')}"></span></td>
+                    </tr>
+                    <tr>
+                        <td>별점</td>
+                        <td><i class="fa fa-star"></i><span th:text="*{star}"></span></td>
+                    </tr>
+                    <tr>
+                        <td>장르</td>
+                        <td>
+                            <span th:each="genreName : *{genreNameList}">
+                                <div class="badge bg-primary bg-gradient rounded-pill mb0p3r" th:text="${genreName}"></div>
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>내용</td>
+                        <td><span th:text="*{content}"></span></td>
+                    </tr>
+                </table>
+            </div>
+        </section>
+        <hr class="w90p mt4r mb2r ml5p">
+        <section style="height: 450px;">
+            <div class="reviewDiv">
+                <div class="floatL inline-block" style="width: 690px;">
+                    <!-- 내가 작성한 리뷰 -->
+                    <div th:if="${myReview != null}">
+                        <form th:action="@{/review/delete/{id} (id=${movie.id}, page=${page.currNum}, size=${page.size})}" method="post" id="myReviewForm"
+                              onsubmit="return checkDelete()">
+                            <h3 class="mb0p5r">나의 리뷰</h3>
+                            <span class="star">
+                                ★★★★★
+                                <span th:style="|width: ${myReview.star * 10}%|">★★★★★</span>
+                                <input type="range">
+                            </span>
+                            <input th:value="${#numbers.formatInteger(myReview.star, 1)}" class="displayStar" disabled />
+                            <div class="mb1r">
+                                <span th:text="${myReview.content}">너무 너무 너무 재밌었어요.</span>
+                                <br><span th:text="${myReview.nickname}" class="review-small-font">원경</span>
+                            </div>
+                            <input type="hidden" name="page" th:value="${page.currNum}" />
+                            <input type="hidden" name="size" th:value="${page.size}" />
+                            <input type="button" value="수정" class="submit-btn btn-mini" th:onclick="|location.href='@{/review/modify/{id} (id=${movie.id}, page=${page.currNum}, size=${page.size})}'|" />
+                            <input type="submit" value="삭제" class="submit-btn btn-mini" />
+                        </form>
+                    </div>
+                </div>
+                <!-- 영화 리뷰 list -->
+                <div class="inline-block" style="width: 550px;">
+                    <h4>리뷰(<span th:text="${totalCount}"></span>)</h4>
+                    <div th:each="review, i : ${reviewList}" style="width: 100%;" th:class="${i.count eq reviewList.size} ? 'mb2r inline-block' : 'inline-block'">
+                        <div class="floatL" style="width: 90px;">
+                            <span class="list-star">
+                                ★★★★★
+                                <span th:style="|width: ${review.star * 10}%|">★★★★★</span>
+                                <input type="range">
+                            </span>
+                            <br><span th:text="${#numbers.formatInteger(review.star, 1)}">5.0</span>
+                        </div>
+                        <div class="grid">
+                            <span th:text="${review.content}">너무 너무 너무 재밌었어요.</span>
+                            <span th:text="${review.nickname}" class="review-small-font">원경</span>
+                        </div>
+                        <div style="clear: both;"></div>
+                        <hr th:class="${i.count eq reviewList.size} ? 'none'">
+                    </div>
+                    <!-- 리뷰 페이징 -->
+                    <div th:replace="~{fragment/paging :: paging}"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+    </div>
+    <!-- Footer-->
+    <div th:replace="~{fragment/footer :: footer}"></div>
+    </body>
+</html>

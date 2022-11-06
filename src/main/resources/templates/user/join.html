@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <!-- Header -->
+    <div th:replace="~{fragment/header :: header}"></div>
+    <body>
+    <main>
+        <section>
+            <div class="my10r">
+                <div class="text-center">
+                    <h2 class="fw-bold"><a th:href="@{/disney}">Disney</a></h2>
+                    <h2 class="fw-bold">회원가입</h2>
+                    <div class="joinDivStyle">
+                        <form th:action th:object="${userJoinForm}" method="post">
+                            <div class="joinDiv">
+                                <label for="loginId" class="text-start">아이디</label>
+                                <input type="text" id="loginId" th:field="*{loginId}" class="text-field" placeholder="아이디"
+                                       th:class="${#fields.hasErrors('loginId')? 'text-field fieldError' : 'text-field'}">
+                                <p class="text-start text-error" th:each="error, stat : ${#fields.errors('loginId')}" th:text="${error}" th:if="${stat.last}"></p>
+                            </div><br>
+                            <div class="joinDiv">
+                                <label for="password" class="text-start">비밀번호</label>
+                                <input type="password" id="password" th:field="*{password}" class="text-field" placeholder="비밀번호"
+                                       th:class="${#fields.hasErrors('password')? 'text-field fieldError' : 'text-field'}">
+                                <p class="text-start text-error" th:each="error, stat : ${#fields.errors('password')}" th:text="${error}" th:if="${stat.last}"></p>
+                            </div><br>
+                            <div class="joinDiv">
+                                <label for="passwordConfirm" class="text-start">비밀번호 확인</label>
+                                <input type="password" id="passwordConfirm" th:field="*{passwordConfirm}" class="text-field" placeholder="비밀번호 확인"
+                                       th:class="${#fields.hasErrors('passwordConfirm')? 'text-field fieldError' : 'text-field'}">
+                                <p class="text-start text-error" th:each="error, stat : ${#fields.errors('passwordConfirm')}" th:text="${error}" th:if="${stat.last}"></p>
+                            </div><br>
+                            <div class="joinDiv">
+                                <label for="nickname" class="text-start">닉네임</label>
+                                <input type="text" id="nickname" th:field="*{nickname}" class="text-field" placeholder="닉네임"
+                                       th:class="${#fields.hasErrors('nickname')? 'text-field fieldError' : 'text-field'}">
+                                <p class="text-start text-error" th:each="error, stat : ${#fields.errors('nickname')}" th:text="${error}" th:if="${stat.last}"></p>
+                            </div><br>
+                            <div class="joinDiv">
+                                <label for="email" class="text-start">이메일</label>
+                                <input type="text" id="email" th:field="*{email}" class="text-field" placeholder="이메일"
+                                       th:class="${#fields.hasErrors('email')? 'text-field fieldError' : 'text-field'}">
+                                <p class="text-start text-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></p>
+                            </div><br>
+                            <input type="submit" value="회원가입" class="submit-btn btn">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    </body>
+</html>

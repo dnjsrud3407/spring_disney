@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <!-- Header -->
+    <div th:replace="~{fragment/header :: header}"></div>
+    <body>
+    <main>
+        <section>
+            <div class="my15r">
+                <div class="text-center">
+                    <h2 class="fw-bold">Welcome to <a th:href="@{/disney}">MovieStory</a></h2>
+                    <div>
+                        <form th:action="@{/user/login}" method="post">
+                            <input type="hidden" name="_csrf" value="{{_csrf.token}}"/>
+                            <input type="text" name="loginId" class="text-field" placeholder="아이디"><br>
+                            <input type="password" name="password" class="text-field" placeholder="비밀번호"><br>
+                            <div th:text="${msg}" class="loginError">
+                                로그인 실패
+                            </div>
+                            <input type="submit" value="로그인" class="submit-btn btn"><br>
+                            <a th:href="@{/oauth2/authorization/google}" class="google btn">
+                                <i class="fa fa-google fa-fw"></i> Login with Google+
+                            </a><br>
+                            <a th:href="@{/user/findLoginId}">아이디 찾기</a> |
+                            <a th:href="@{/user/findPassword}">비밀번호 찾기</a> |
+                            <a th:href="@{/user/join}">회원가입</a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    </body>
+</html>

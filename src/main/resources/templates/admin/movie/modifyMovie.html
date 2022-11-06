@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <!-- Header -->
+    <div th:replace="~{fragment/header :: header-datePicker}"></div>
+    <body>
+    <div id="wrapper">
+    <!-- Navigation-->
+    <div th:replace="~{fragment/navigation :: navigation}"></div>
+    <main>
+        <section>
+            <div class="my8r">
+                <div class="text-center">
+                    <h2 class="fw-bold">영화 수정</h2>
+                    <div class="createMovieDiv">
+                        <form th:action th:object="${movieModifyForm}" method="post" enctype="multipart/form-data">
+                            <input type="hidden" th:field="*{movieId}">
+                            <div class="joinDiv">
+                                <label for="title" class="text-start">영화 제목</label>
+                                <input type="text" id="title" th:field="*{title}" class="text-field" placeholder="영화 제목"
+                                       th:class="${#fields.hasErrors('title')? 'text-field fieldError' : 'text-field'}">
+                                <p class="text-start  text-error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></p>
+                            </div><br>
+                            <div class="joinDiv">
+                                <label for="datePicker" class="text-start">개봉일</label>
+                                <input type="text" id="datePicker" class="text-field form-control" th:field="*{releaseDate}"
+                                       th:class="${#fields.hasErrors('releaseDate')? 'text-field form-control fieldError' : 'text-field form-control'}"/>
+                                <p class="text-start text-error" th:each="error, stat : ${#fields.errors('releaseDate')}" th:text="${error}" th:if="${stat.last}"></p>
+                            </div><br>
+                            <div class="joinDiv">
+                                <label for="content" class="text-start">줄거리</label>
+                                <textarea id="content" th:field="*{content}" class="text-field" placeholder="줄거리" rows="15"
+                                          th:class="${#fields.hasErrors('content')? 'text-field textarea fieldError' : 'text-field textarea'}"></textarea>
+                                <p class="text-start text-error" th:if="${#fields.hasErrors('content')}" th:errors="*{content}"></p>
+                            </div><br><br>
+                            <div class="joinDiv" style="width: 320px">
+                                <span class="text-start">장르 선택</span>
+                                <span th:each="genre : ${genres}" class="fit floatL">
+                                    <input type="checkbox" th:field="*{genreIds}" th:value="${genre.id}">
+                                    <label th:for="${#ids.prev('genreIds')}" th:text="${genre.genreName}">장르</label>
+                                </span>
+                                <p class="text-start text-error" th:if="${#fields.hasErrors('genreIds')}" th:errors="*{genreIds}"></p>
+                            </div><br><br>
+                            <div class="joinDiv" style="width: 320px">
+                                <label class="text-start">포스터</label>
+                                <input type="file" th:field="*{file}">
+                                <p class="originalFile">이전 파일
+                                    <input type="text" th:field="*{originalFileName}"
+                                           class="fw-bold border-0" readonly />
+                                </p>
+                                <p class="text-start text-error" th:if="${#fields.hasErrors('file')}" th:errors="*{file}"></p>
+                             </div><br><br><br>
+                            <div>
+                                <label for="visible" class="mr1r">활성화</label>
+                                <input type="checkbox" id="visible" th:field="*{visible}">
+                            </div><br>
+                            <input type="submit" value="영화 수정" class="submit-btn btn">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    </div>
+    <!-- Footer-->
+    <div th:replace="~{fragment/footer :: footer}"></div>
+    </body>
+</html>

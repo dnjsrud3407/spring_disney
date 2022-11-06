@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <!-- Header -->
+    <div th:replace="~{fragment/header :: header}"></div>
+    <body>
+    <div id="wrapper">
+    <!-- Navigation-->
+    <div th:replace="~{fragment/navigation :: navigation}"></div>
+    <main>
+        <section class="bg-dark">
+            <div class="header-div pb6p">
+                <div class="w55p pt12p mr5p">
+                    <h1 class="display-5 text-white">영화 리뷰를<br> 마음껏 작성해주세요.</h1>
+                </div>
+                <div class="w40p pt6p">
+                    <img class="img-fluid rounded-3" th:src="@{/img/review.PNG}" />
+                </div>
+            </div>
+        </section>
+        <section class="mb5r">
+            <div class="section-div-movieList">
+                <div class="fs1p1r text-muted mt4p5r mb1p5r fw-600">
+                    <p>평점 Best10</p>
+                </div>
+                <div class="autoplay">
+                    <button type="button" class="slick-prev">Previous</button>
+                    <div th:each="movie : ${movieListTop}" class="mainMovieDiv floatL mb4r" th:onclick="|location.href='@{/movie/{id} (id=${movie.id})}'|">
+                        <div class="mainCard">
+                            <img th:src="|/poster/${movie.storedFileName}|" class="cursor-pointer"/>
+                            <div class="p1p5r">
+                                <span th:each="genreName : ${movie.genreNameList}">
+                                    <div class="badge bg-primary bg-gradient rounded-pill mb0p3r" th:text="${genreName}"></div>
+                                </span>
+                                <br>
+                                <div class="mb0p2r fs0p9r cursor-pointer">
+                                    <i class="fa fa-star"></i><span th:text="${movie.star}">평점</span>(<span th:text="${movie.reviewCount}"></span>)
+                                </div>
+                                <div class="fs1p2r mt3px cursor-pointer" href="#!"><h5 th:text="${movie.title}">영화 제목</h5></div>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="slick-next">Next</button>
+                </div>
+                <div style="clear: both;"></div>
+            </div>
+        </section>
+    </main>
+    </div>
+    <!-- Footer-->
+    <div th:replace="~{fragment/footer :: footer}"></div>
+    <script type="text/javascript" th:src="@{/slick/slick.min.js}"></script>
+    <script>
+        $(document).ready(function(){
+            $('.autoplay').slick({
+              slidesToShow: 5,
+              slidesToScroll: 5,
+              autoplay: true,
+              autoplaySpeed: 4000,
+              draggable: false,
+            });
+        });
+    </script>
+    </body>
+</html>
